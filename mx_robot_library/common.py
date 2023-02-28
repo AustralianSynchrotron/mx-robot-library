@@ -34,7 +34,7 @@ class Common:
         return self._client._send_cmd(
             cmd=RobotGeneralCmd(
                 cmd=cmd,
-                args=(args if args is not None else []),
+                args=args,
             ).cmd_fmt,
             port=self._port,
         )
