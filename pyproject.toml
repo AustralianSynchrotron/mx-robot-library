@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "mx-robot-library"
+version = "0.1.0"
+description = "MX Robot Library"
+authors = ["MX3 Team"]
+
+[[tool.poetry.source]]
+name = "cachedpypi"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+default = true
+
+[[tool.poetry.source]]
+name = "asciprod"
+url = "https://pypi.asci.synchrotron.org.au/asci/prod/+simple"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+pydantic = "^1.10.5"
+typing-extensions = "^4.5.0"
+cachetools = "^5.3.0"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.21.0"
+pytest = "^7.2.1"
+pytest-cov = "^4.0.0"
+pylint = "2.16.2"
+autopep8 = "^2.0.1"
+Sphinx = "5.3.0"
+sphinx-rtd-theme = "1.1.1"
+alabaster = "0.7.13"
+autodoc-pydantic = "1.8.0"
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
