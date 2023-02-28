@@ -1,9 +1,17 @@
 from collections import OrderedDict
 from enum import Enum
 from typing import Any, Dict, Optional
+
 from pydantic import (
-    BaseModel, Field, conint, conlist, root_validator, validate_arguments, validator,
+    BaseModel,
+    Field,
+    conint,
+    conlist,
+    root_validator,
+    validate_arguments,
+    validator,
 )
+
 from mx_robot_library.config import get_settings
 
 config = get_settings()
@@ -222,7 +230,11 @@ class RobotTrajMoveHomeDirectCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.MOVE_HOME_DIRECT,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -241,7 +253,11 @@ class RobotTrajMoveHomeSafeCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.MOVE_HOME_SAFE,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -277,7 +293,11 @@ class RobotTrajMountSampleCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.MOUNT_AND_PREPICK_SAMPLE,
         const=True,
     )
-    args: conlist(item_type=int, min_items=13, max_items=13,) = Field(
+    args: conlist(
+        item_type=int,
+        min_items=13,
+        max_items=13,
+    ) = Field(
         title="Arguments",
     )
 
@@ -304,7 +324,11 @@ class RobotTrajUnmountSampleCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.UNMOUNT_SAMPLE,
         const=True,
     )
-    args: conlist(item_type=int, min_items=5, max_items=5,) = Field(
+    args: conlist(
+        item_type=int,
+        min_items=5,
+        max_items=5,
+    ) = Field(
         title="Arguments",
     )
 
@@ -354,7 +378,11 @@ class RobotTrajUnmountAndMountSampleCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.UNMOUNT_MOUNT_AND_PREPICK_SAMPLE,
         const=True,
     )
-    args: conlist(item_type=int, min_items=13, max_items=13,) = Field(
+    args: conlist(
+        item_type=int,
+        min_items=13,
+        max_items=13,
+    ) = Field(
         title="Arguments",
     )
 
@@ -383,7 +411,11 @@ class RobotTrajPrepickSampleCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.PREPICK_SAMPLE,
         const=True,
     )
-    args: conlist(item_type=int, min_items=6, max_items=6,) = Field(
+    args: conlist(
+        item_type=int,
+        min_items=6,
+        max_items=6,
+    ) = Field(
         title="Arguments",
     )
 
@@ -421,7 +453,11 @@ class RobotTrajReadSampleCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.READ_SAMPLE,
         const=True,
     )
-    args: conlist(item_type=int, min_items=5, max_items=5,) = Field(
+    args: conlist(
+        item_type=int,
+        min_items=5,
+        max_items=5,
+    ) = Field(
         title="Arguments",
     )
 
@@ -454,7 +490,11 @@ class RobotTrajReturnSampleCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.RETURN_SAMPLE,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -480,7 +520,11 @@ class RobotTrajPickAndMoveSampleCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.PICK_AND_MOVE_SAMPLE,
         const=True,
     )
-    args: conlist(item_type=int, min_items=5, max_items=5,) = Field(
+    args: conlist(
+        item_type=int,
+        min_items=5,
+        max_items=5,
+    ) = Field(
         title="Arguments",
     )
 
@@ -511,7 +555,11 @@ class RobotTrajMountPlateCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.MOUNT_PLATE,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=2, max_items=2,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=2,
+        max_items=2,
+    ) = Field(
         title="Arguments",
     )
 
@@ -530,7 +578,11 @@ class RobotTrajUnmountPlateCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.UNMOUNT_PLATE,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -549,7 +601,11 @@ class RobotTrajPickAndMovePlateCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.PICK_AND_MOVE_PLATE,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=2, max_items=2,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=2,
+        max_items=2,
+    ) = Field(
         title="Arguments",
     )
 
@@ -568,7 +624,11 @@ class RobotTrajTeachGonioCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.TEACH_GONIOMETER,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -588,7 +648,11 @@ class RobotTrajTeachPuckCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.TEACH_PUCK,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=2, max_items=2,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=2,
+        max_items=2,
+    ) = Field(
         title="Arguments",
     )
 
@@ -608,7 +672,11 @@ class RobotTrajTeachDewarCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.TEACH_DEWAR,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=2, max_items=2,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=2,
+        max_items=2,
+    ) = Field(
         title="Arguments",
     )
 
@@ -627,7 +695,11 @@ class RobotTrajTeachPlateHolderCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.TEACH_PLATE_HOLDER,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -647,7 +719,11 @@ class RobotTrajSoakToolCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.SOAK_TOOL,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -668,7 +744,11 @@ class RobotTrajDryToolCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.DRY_TOOL,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -688,7 +768,11 @@ class RobotTrajChangeToolCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.CHANGE_TOOL,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -707,6 +791,10 @@ class RobotTrajCalibrateToolCmd(BaseTrajectoryCmd):
         default=TrajectorySubCmds.CALIBRATE_TOOL,
         const=True,
     )
-    args: conlist(item_type=conint(ge=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )

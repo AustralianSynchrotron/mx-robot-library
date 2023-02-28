@@ -1,11 +1,12 @@
+from socket import AF_INET, SOCK_STREAM, socket
 from typing import Union
-from socket import socket, AF_INET, SOCK_STREAM
-from .logger import get_logger
+
+from .common import Common
 from .config import get_settings
 from .exceptions import ClientReadonly
+from .logger import get_logger
 from .status import Status
 from .trajectory import Trajectory
-from .common import Common
 from .utils import Utils
 
 logger = get_logger()

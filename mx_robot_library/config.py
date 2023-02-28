@@ -1,7 +1,8 @@
 import logging
-from typing import Tuple, Union, Optional
-from pydantic import BaseSettings, Field, FilePath
 from functools import lru_cache
+from typing import Optional, Tuple, Union
+
+from pydantic import BaseSettings, Field
 
 
 class ASCSettings(BaseSettings):

@@ -1,6 +1,8 @@
-from typing import Union, Any
-from typing_extensions import Self
 from types import MappingProxyType
+from typing import Any, Union
+
+from typing_extensions import Self
+
 from .base import BaseRobotItem, BaseRobotMeta
 
 
@@ -10,7 +12,9 @@ class Position(BaseRobotItem):
     @classmethod
     def validate(cls: type[Self], value: Any) -> Self:
         """ """
-        if (isinstance(value, str) or isinstance(value, int)) and value in RobotPositions:
+        if (
+            isinstance(value, str) or isinstance(value, int)
+        ) and value in RobotPositions:
             return RobotPositions[value]
         return super(Position, cls).validate(value)
 

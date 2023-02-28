@@ -1,9 +1,11 @@
 from typing import TYPE_CHECKING, Union
-from cachetools import cached, TTLCache
-from mx_robot_library.schemas.commands.status import RobotStatusCmds, RobotStatusCmd
-from mx_robot_library.schemas.responses.state import StateResponse
+
+from cachetools import TTLCache, cached
+
+from mx_robot_library.schemas.commands.status import RobotStatusCmd, RobotStatusCmds
 from mx_robot_library.schemas.responses.plc import PLCInputsResponse, PLCOutputsResponse
 from mx_robot_library.schemas.responses.sample_data import SampleDataResponse
+from mx_robot_library.schemas.responses.state import StateResponse
 
 if TYPE_CHECKING:
     from .client import Client
@@ -119,5 +121,7 @@ class Status:
         """ """
 
         # Read populated puck positions from PLC outputs 56(1)->84(29)
-        _puck_positions = self.plc_outputs[56:85]
-        self.sample_data
+        # _puck_positions = self.plc_outputs[56:85]
+        # self.sample_data
+
+        raise NotImplementedError

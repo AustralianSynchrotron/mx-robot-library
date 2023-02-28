@@ -1,17 +1,26 @@
-from typing import TYPE_CHECKING, Union, Optional, Literal
-from typing_extensions import Annotated
+from typing import TYPE_CHECKING, Literal, Optional, Union
+
 from pydantic import validate_arguments
+from typing_extensions import Annotated
+
 from mx_robot_library.schemas.commands.trajectory import (
-    BaseTrajectoryCmd, RobotTrajMoveHomeDirectCmd, RobotTrajMoveHomeSafeCmd,
-    RobotTrajMountSampleCmd, RobotTrajUnmountSampleCmd, RobotTrajPrepickSampleCmd,
-    RobotTrajUnmountAndMountSampleCmd, RobotTrajReadSampleCmd, RobotTrajMountPlateCmd,
-    RobotTrajReturnSampleCmd, RobotTrajPickAndMoveSampleCmd, RobotTrajUnmountPlateCmd,
-    RobotTrajPickAndMovePlateCmd, RobotTrajTeachGonioCmd, RobotTrajTeachPuckCmd,
-    RobotTrajTeachDewarCmd, RobotTrajTeachPlateHolderCmd, RobotTrajSoakToolCmd,
-    RobotTrajDryToolCmd, RobotTrajChangeToolCmd, RobotTrajCalibrateToolCmd,
+    BaseTrajectoryCmd,
+    RobotTrajCalibrateToolCmd,
+    RobotTrajChangeToolCmd,
+    RobotTrajDryToolCmd,
+    RobotTrajMountSampleCmd,
+    RobotTrajMoveHomeDirectCmd,
+    RobotTrajMoveHomeSafeCmd,
+    RobotTrajPickAndMoveSampleCmd,
+    RobotTrajPrepickSampleCmd,
+    RobotTrajReadSampleCmd,
+    RobotTrajReturnSampleCmd,
+    RobotTrajSoakToolCmd,
+    RobotTrajUnmountAndMountSampleCmd,
+    RobotTrajUnmountSampleCmd,
 )
-from mx_robot_library.schemas.common.tool import RobotTools, Tool
 from mx_robot_library.schemas.common.sample import Pin, Puck
+from mx_robot_library.schemas.common.tool import RobotTools, Tool
 
 if TYPE_CHECKING:
     from .client import Client
@@ -29,7 +38,9 @@ class Trajectory:
         self._gonio_y_shift: int = 0
         self._gonio_z_shift: int = 0
 
-    def _send_cmd(self, cmd: type[BaseTrajectoryCmd], args: list = []) -> bytes:
+    def _send_cmd(
+        self, cmd: type[BaseTrajectoryCmd], args: Optional[list] = None
+    ) -> bytes:
         """Send a command to the robot and receive echo reply.
 
         Parameters
@@ -37,7 +48,7 @@ class Trajectory:
         cmd : type[BaseTrajectoryCmd]
             Command to send to the robot.
         args : list, optional
-            Command arguments, by default []
+            Command arguments, by default None
 
         Returns
         -------
@@ -46,7 +57,9 @@ class Trajectory:
         """
 
         return self._client._send_cmd(
-            cmd=cmd(args=args).cmd_fmt,
+            cmd=cmd(
+                args=(args if args is not None else []),
+            ).cmd_fmt,
             port=self._port,
         )
 
@@ -183,13 +196,16 @@ class Trajectory:
         if tool is None:
             tool = self._client.status.state.tool
 
-        return self._send_cmd(RobotTrajUnmountSampleCmd, args=[
-            tool,
-            data_matrix_scan,
-            self._gonio_x_shift,
-            self._gonio_y_shift,
-            self._gonio_z_shift,
-        ])
+        return self._send_cmd(
+            RobotTrajUnmountSampleCmd,
+            args=[
+                tool,
+                data_matrix_scan,
+                self._gonio_x_shift,
+                self._gonio_y_shift,
+                self._gonio_z_shift,
+            ],
+        )
 
     @validate_arguments
     def unmount_then_mount(

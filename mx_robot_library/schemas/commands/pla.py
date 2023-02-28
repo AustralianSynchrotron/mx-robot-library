@@ -1,6 +1,7 @@
 from pydantic import Field, confloat, conint, conlist
 
 from mx_robot_library.config import get_settings
+
 from .base import BaseCmdModel, CmdEnum, CmdField
 
 config = get_settings()
@@ -116,7 +117,11 @@ class RobotPLASetStepCmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="pla_setstep", const=True)
-    args: conlist(item_type=confloat(le=10, ge=0), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=confloat(le=10, ge=0),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 

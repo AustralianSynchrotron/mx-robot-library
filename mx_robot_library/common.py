@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+
 from pydantic import validate_arguments
-from mx_robot_library.schemas.commands.general import RobotGeneralCmds, RobotGeneralCmd
+
+from mx_robot_library.schemas.commands.general import RobotGeneralCmd, RobotGeneralCmds
 
 if TYPE_CHECKING:
     from .client import Client
@@ -13,7 +15,7 @@ class Common:
         self._client = client
         self._port = self._client._cmd_port
 
-    def _send_cmd(self, cmd: RobotGeneralCmds, args: list = []) -> bytes:
+    def _send_cmd(self, cmd: RobotGeneralCmds, args: Optional[list] = None) -> bytes:
         """Send a command to the robot and receive echo reply.
 
         Parameters
@@ -21,7 +23,7 @@ class Common:
         cmd : RobotGeneralCmds
             Command to send to the robot.
         args : list, optional
-            Command arguments, by default []
+            Command arguments, by default None
 
         Returns
         -------
@@ -30,7 +32,10 @@ class Common:
         """
 
         return self._client._send_cmd(
-            cmd=RobotGeneralCmd(cmd=cmd, args=args).cmd_fmt,
+            cmd=RobotGeneralCmd(
+                cmd=cmd,
+                args=(args if args is not None else []),
+            ).cmd_fmt,
             port=self._port,
         )
 

@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, Union
+
 from pydantic import validate_arguments
-from mx_robot_library.schemas.common.sample import Puck, Pin, PinType
+
+from mx_robot_library.schemas.common.sample import Pin, PinType, Puck
 
 if TYPE_CHECKING:
     from .client import Client

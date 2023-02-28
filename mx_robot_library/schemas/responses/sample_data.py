@@ -1,8 +1,10 @@
+from pydantic import Field, conlist, validate_arguments
 from typing_extensions import Self
-from pydantic import Field, validate_arguments, conlist
+
 from mx_robot_library.config import get_settings
-from .base import BaseStatusResponse
+
 from ..commands.status import RobotStatusCmds
+from .base import BaseStatusResponse
 
 config = get_settings()
 
@@ -30,8 +32,10 @@ class SampleDataResponse(BaseStatusResponse):
         _raw_values = res["raw_values"]
 
         # Set values for keys where value does not need pre-parsing
-        res.update({
-            "puck_matrix": _raw_values[21:50],
-        })
+        res.update(
+            {
+                "puck_matrix": _raw_values[21:50],
+            }
+        )
 
         return res

@@ -1,9 +1,11 @@
 import logging
-from logging import Logger
 from functools import lru_cache
+from logging import Logger
+
 from .config import get_settings
 
 config = get_settings()
+
 
 @lru_cache()
 def get_logger() -> Logger:

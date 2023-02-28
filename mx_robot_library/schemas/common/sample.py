@@ -1,6 +1,8 @@
-from typing_extensions import Self
 from enum import Enum
+
 from pydantic import BaseModel, Field
+from typing_extensions import Self
+
 from mx_robot_library.config import get_settings
 
 config = get_settings()

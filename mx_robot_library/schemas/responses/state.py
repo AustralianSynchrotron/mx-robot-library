@@ -1,12 +1,14 @@
 from typing import Optional
-from typing_extensions import Self
+
 from pydantic import Field, validate_arguments
-from .base import BaseStatusResponse
-from ..common.tool import Tool
-from ..common.position import Position, RobotPositions
-from ..common.path import Path, RobotPaths
-from ..common.sample import Pin
+from typing_extensions import Self
+
 from ..commands.status import RobotStatusCmds
+from ..common.path import Path, RobotPaths
+from ..common.position import Position, RobotPositions
+from ..common.sample import Pin
+from ..common.tool import Tool
+from .base import BaseStatusResponse
 
 
 class StateResponse(BaseStatusResponse):
@@ -36,7 +38,7 @@ class StateResponse(BaseStatusResponse):
     path: Path = Field(
         title="Command Path",
         description="The function the robot is currently running.",
-        default=RobotPaths.UNDEFINED
+        default=RobotPaths.UNDEFINED,
     )
     jaw_a_is_open: bool = Field(
         title="Jaw (A) Is Open",
@@ -115,8 +117,10 @@ class StateResponse(BaseStatusResponse):
             pin_id = next(_pin_values)
             key = next(_pin_keys)
             if cls.is_valid_id(puck_id) and cls.is_valid_id(pin_id):
-                res[key] = Pin.parse_obj(obj={
-                    "id": pin_id,
-                    "puck": {"id": puck_id},
-                })
+                res[key] = Pin.parse_obj(
+                    obj={
+                        "id": pin_id,
+                        "puck": {"id": puck_id},
+                    }
+                )
         return res

@@ -1,7 +1,9 @@
 import re
 from typing import Union
-from typing_extensions import Self
+
 from pydantic import BaseModel, Field, validate_arguments
+from typing_extensions import Self
+
 from ..commands.status import RobotStatusCmds
 
 
@@ -36,7 +38,7 @@ class BaseStatusResponse(BaseModel):
 
         if isinstance(id, str):
             return False
-        
+
         return id >= 1
 
     @classmethod
@@ -62,7 +64,7 @@ class BaseStatusResponse(BaseModel):
         """
 
         _raw_values: tuple[str, ...] = tuple()
-        match_str = re.compile(f"(?<={cmd.value}\().*(?=\))", re.S)
+        match_str = re.compile(f"(?<={cmd.value}\().*(?=\))", re.S)  # noqa: W605
         if re.search(match_str, raw):
             _raw_inner: str = re.findall(match_str, raw)[0]
             _raw_values = _raw_inner.split(sep=",")

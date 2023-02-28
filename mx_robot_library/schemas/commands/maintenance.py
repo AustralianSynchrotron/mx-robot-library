@@ -4,6 +4,7 @@ from typing import Any, Dict
 from pydantic import Field, conint, conlist, validator
 
 from mx_robot_library.config import get_settings
+
 from .base import BaseCmdModel, CmdEnum, CmdField
 
 config = get_settings()
@@ -58,7 +59,11 @@ class RobotMaintCmd(BaseCmdModel):
 class BaseRobotMaintSetSample(BaseCmdModel):
     """Abstract Robot Maintenance Set Sample"""
 
-    args: conlist(item_type=int, min_items=3, max_items=3,) = Field(
+    args: conlist(
+        item_type=int,
+        min_items=3,
+        max_items=3,
+    ) = Field(
         title="Arguments",
     )
 
@@ -121,7 +126,11 @@ class RobotMaintSetToolSampleCmd(BaseRobotMaintSetSample):
     """
 
     cmd: str = Field(title="Command", default="settool", const=True)
-    args: conlist(item_type=int, min_items=4, max_items=4,) = Field(
+    args: conlist(
+        item_type=int,
+        min_items=4,
+        max_items=4,
+    ) = Field(
         title="Arguments",
     )
 
@@ -154,7 +163,11 @@ class RobotMaintSetMaxSoakCmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="setmaxsoaktime", const=True)
-    args: conlist(item_type=conint(ge=1, le=10800), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1, le=10800),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -172,7 +185,11 @@ class RobotMaintSetMaxSoakNumCmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="setmaxsoaknb", const=True)
-    args: conlist(item_type=conint(ge=1, le=48), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1, le=48),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -192,7 +209,11 @@ class RobotMaintSetAutoCloseLidCmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="setautocloselidtimer", const=True)
-    args: conlist(item_type=conint(ge=1, le=34560), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1, le=34560),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -212,7 +233,11 @@ class RobotMaintSetAutoDryCmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="setautodrytimer", const=True)
-    args: conlist(item_type=conint(ge=1, le=34560), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=1, le=34560),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -230,7 +255,11 @@ class RobotMaintSetCoolTimeCmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="setgrippercoolingtimer", const=True)
-    args: conlist(item_type=conint(ge=0, le=60), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=0, le=60),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -247,7 +276,11 @@ class RobotMaintSetHighLN2Cmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="sethighln2", const=True)
-    args: conlist(item_type=conint(ge=0, le=100), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=0, le=100),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -264,7 +297,11 @@ class RobotMaintSetLowLN2Cmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="setlowln2", const=True)
-    args: conlist(item_type=conint(ge=0, le=100), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=0, le=100),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )
 
@@ -287,6 +324,10 @@ class RobotMaintGotoCamPosCmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="gotocameraposition", const=True)
-    args: conlist(item_type=CameraPositions, min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=CameraPositions,
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )

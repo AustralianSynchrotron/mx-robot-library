@@ -1,12 +1,11 @@
 from mx_robot_library.client import Client
 
-
 # Create a new client instance
 robot = Client(
-    host="192.168.0.0", # Controller IP
-    status_port=1000,   # Status query port [ENV: MX_ASC_STATUS_PORT"]
-    cmd_port=10000,     # Trajectory command port [ENV: ASC_CMD_PORT"]
-    readonly=False,     # Toggle to block trajectory calls (Local to client)
+    host="192.168.0.0",  # Controller IP
+    status_port=1000,  # Status query port [ENV: MX_ASC_STATUS_PORT"]
+    cmd_port=10000,  # Trajectory command port [ENV: ASC_CMD_PORT"]
+    readonly=False,  # Toggle to block trajectory calls (Local to client)
 )
 
 # Read robot state

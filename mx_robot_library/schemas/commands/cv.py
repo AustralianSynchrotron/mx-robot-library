@@ -70,6 +70,10 @@ class RobotCVLightModeCmd(BaseCmdModel):
     """
 
     cmd: str = Field(title="Command", default="cv_forcelightoff", const=True)
-    args: conlist(item_type=conint(ge=0, le=1), min_items=1, max_items=1,) = Field(
+    args: conlist(
+        item_type=conint(ge=0, le=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
         title="Arguments",
     )

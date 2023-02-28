@@ -1,7 +1,10 @@
-from typing import Union, Any
-from typing_extensions import Self
 from types import MappingProxyType
+from typing import Any, Union
+
+from typing_extensions import Self
+
 from mx_robot_library.config import get_settings
+
 from .base import BaseRobotItem, BaseRobotMeta
 
 config = get_settings()
