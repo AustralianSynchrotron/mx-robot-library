@@ -33,6 +33,12 @@ class TrajectorySubCmds(str, Enum):
     RETURN_SAMPLE = "back"
     PICK_AND_MOVE_SAMPLE = "gotodif"
 
+    # Hot Puck Mount/Unmount/Move Commands
+    HOTPUCK_MOUNT_AND_PREPICK_SAMPLE = "putht"
+    HOTPUCK_UNMOUNT_SAMPLE = "getht"
+    HOTPUCK_UNMOUNT_MOUNT_AND_PREPICK_SAMPLE = "getputht"
+    HOTPUCK_RETURN_SAMPLE = "backht"
+
     # Plate / Tray Commands
     MOUNT_PLATE = "putplate"
     UNMOUNT_PLATE = "getplate"
@@ -43,6 +49,7 @@ class TrajectorySubCmds(str, Enum):
     TEACH_PUCK = "teachpuck"
     TEACH_DEWAR = "teachdewar"
     TEACH_PLATE_HOLDER = "teachplateholder"
+    TEACH_HOTPUCK = "teachhotpuck"
 
     # Tool Commands
     SOAK_TOOL = "soak"
@@ -541,6 +548,156 @@ class RobotTrajPickAndMoveSampleCmd(BaseTrajectoryCmd):
         return values
 
 
+class RobotTrajHotPuckMountSampleCmd(BaseTrajectoryCmd):
+    """Robot Trajectory Hot Puck Mount And Prepick Sample Command
+
+    Take a sample from the hot puck, eventually read its datamatrix
+    and mount it on the goniometer.
+    The sample needed for the next exchange can be then pre-picked.
+
+    args : list[int]
+        List containing thirteen integers to select sample to mounted
+        and the sample to be prepicked.
+
+        0: Tool Number
+        1: Puck Number
+        2: Sample Number
+        3: DataMatrix Scan (1: Enabled, 0: Disabled)
+        4: Next Puck Number (Set to "0" to skip prepick)
+        5: Next Sample Number (Set to "0" to skip prepick)
+        6: Sample Type (1: Hampton; 0: other caps)
+        7: Next Sample Type (1: Hampton; 0: other caps)
+        8: Sample Detection Inhibition (0: Detection enable, 1: detection disabled)
+        9: Next Sample Detection Inhibition (0: Detection enable, 1: detection disabled)
+        10: Gonio X Shift (µm)
+        11: Gonio Y Shift (µm)
+        12: Gonio Z Shift (µm)
+    """
+
+    sub_cmd: TrajectorySubCmds = Field(
+        title="Sub Command",
+        default=TrajectorySubCmds.HOTPUCK_MOUNT_AND_PREPICK_SAMPLE,
+        const=True,
+    )
+    args: conlist(
+        item_type=int,
+        min_items=13,
+        max_items=13,
+    ) = Field(
+        title="Arguments",
+    )
+
+
+class RobotTrajHotPuckUnmountSampleCmd(BaseTrajectoryCmd):
+    """Robot Trajectory Hot Puck Unmount Sample Command
+
+    Get the sample from the diffractometer, eventually read its datamatrix
+    and put it back into the designated hot puck, in its memorized position.
+
+    args : list[int]
+        List containing five integers to select tool used to get the sample,
+        whether to scan the sample data matrix and the goniometer offset.
+
+        0: Tool Number
+        1: DataMatrix Scan (1: Enabled, 0: Disabled)
+        2: Gonio X Shift (µm)
+        3: Gonio Y Shift (µm)
+        4: Gonio Z Shift (µm)
+    """
+
+    sub_cmd: TrajectorySubCmds = Field(
+        title="Sub Command",
+        default=TrajectorySubCmds.HOTPUCK_UNMOUNT_SAMPLE,
+        const=True,
+    )
+    args: conlist(
+        item_type=int,
+        min_items=5,
+        max_items=5,
+    ) = Field(
+        title="Arguments",
+    )
+
+    @root_validator(pre=True)
+    def compute_full_args(cls, values: Dict[str, Any]):  # noqa: B902
+        # Since our input arguments aren't in the correct position for the generated
+        # command, we need to shift them into place.
+        args = [0] * 13
+        if len(values.get("args", [])) == 5:
+            args[0], args[3], args[10], args[11], args[12] = values["args"]
+        values["full_args"] = cls.trim_args(args)
+        return values
+
+
+class RobotTrajHotPuckUnmountAndMountSampleCmd(BaseTrajectoryCmd):
+    """Robot Trajectory Hot Puck Unmount, Mount And Prepick Sample Command
+
+    Get the sample currently mounted on the goniometer,
+    put it back into the hot puck and mount the specified sample
+    on the goniometer eventually reading its datamatrix
+    (no heating of the gripper between both operations).
+
+    The sample needed for the next exchange can be then pre-picked
+    (only available for double grippers with process requiring soaking phases).
+
+    args : list[int]
+        List containing thirteen integers to select sample to mounted
+        and the sample to be prepicked.
+
+        0: Tool Number
+        1: Puck Number
+        2: Sample Number
+        3: DataMatrix Scan (1: Enabled, 0: Disabled)
+        4: Next Puck Number (Set to "0" to skip prepick)
+        5: Next Sample Number (Set to "0" to skip prepick)
+        6: Sample Type (1: Hampton; 0: other caps)
+        7: Next Sample Type (1: Hampton; 0: other caps)
+        8: Sample Detection Inhibition (0: Detection enable, 1: detection disabled)
+        9: Next Sample Detection Inhibition (0: Detection enable, 1: detection disabled)
+        10: Gonio X Shift (µm)
+        11: Gonio Y Shift (µm)
+        12: Gonio Z Shift (µm)
+    """
+
+    sub_cmd: TrajectorySubCmds = Field(
+        title="Sub Command",
+        default=TrajectorySubCmds.HOTPUCK_UNMOUNT_MOUNT_AND_PREPICK_SAMPLE,
+        const=True,
+    )
+    args: conlist(
+        item_type=int,
+        min_items=13,
+        max_items=13,
+    ) = Field(
+        title="Arguments",
+    )
+
+
+class RobotTrajHotPuckReturnSampleCmd(BaseTrajectoryCmd):
+    """Robot Trajectory Hot Puck Return Sample Command
+
+    Put the sample in the gripper back in the designated hot puck
+    to its memorized position (generally used after a “recover” path).
+
+    args : list[int]
+        List containing a single integer to select
+        the tool holding the sample to be returned.
+    """
+
+    sub_cmd: TrajectorySubCmds = Field(
+        title="Sub Command",
+        default=TrajectorySubCmds.HOTPUCK_RETURN_SAMPLE,
+        const=True,
+    )
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=1,
+        max_items=1,
+    ) = Field(
+        title="Arguments",
+    )
+
+
 class RobotTrajMountPlateCmd(BaseTrajectoryCmd):
     """Robot Trajectory Mount Plate Command
 
@@ -699,6 +856,30 @@ class RobotTrajTeachPlateHolderCmd(BaseTrajectoryCmd):
         item_type=conint(ge=1),
         min_items=1,
         max_items=1,
+    ) = Field(
+        title="Arguments",
+    )
+
+
+class RobotTrajTeachHotPuckCmd(BaseTrajectoryCmd):
+    """Robot Trajectory Teach Hot Puck Command
+
+    Launch automatic teaching of the hot puck given in argument
+    (available only with laser tool).
+
+    args : list[int]
+        List containing two integers to select the tool and puck to teach.
+    """
+
+    sub_cmd: TrajectorySubCmds = Field(
+        title="Sub Command",
+        default=TrajectorySubCmds.TEACH_HOTPUCK,
+        const=True,
+    )
+    args: conlist(
+        item_type=conint(ge=1),
+        min_items=2,
+        max_items=2,
     ) = Field(
         title="Arguments",
     )

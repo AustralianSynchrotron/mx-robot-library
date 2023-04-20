@@ -65,7 +65,7 @@ class Client:
 
         Returns
         -------
-        Status
+        Trajectory
             Instance of the trajectory sub-client.
         """
 
@@ -82,7 +82,7 @@ class Client:
 
         Returns
         -------
-        Status
+        Common
             Instance of the common sub-client.
         """
 
