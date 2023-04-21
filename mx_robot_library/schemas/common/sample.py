@@ -29,7 +29,7 @@ class Puck(BaseSample):
 
     id: int = Field(
         title="ID",
-        le=config.ASC_NUM_PUCKS,
+        le=101,
         ge=1,
     )
     # datamatrix: ? TBD
@@ -40,7 +40,7 @@ class Pin(BaseSample):
 
     id: int = Field(
         title="ID",
-        le=config.ASC_NUM_PINS,
+        le=101,
         ge=1,
     )
     puck: Puck = Field(

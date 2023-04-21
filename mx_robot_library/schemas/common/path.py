@@ -145,3 +145,23 @@ class RobotPaths(metaclass=RobotPathsMeta):
         name="platetodif",
         description="",
     )
+    HOTPUCK_PUT = Path(
+        id=35000,
+        name="putht",
+        description="",
+    )
+    HOTPUCK_GET = Path(
+        id=36000,
+        name="getht",
+        description="",
+    )
+    HOTPUCK_GET_PUT = Path(
+        id=37000,
+        name="getputht",
+        description="",
+    )
+    HOTPUCK_BACK = Path(
+        id=50000,
+        name="backht",
+        description="",
+    )
