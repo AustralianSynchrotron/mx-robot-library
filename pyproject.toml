@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mx-robot-library"
-version = "0.1.2"
+version = "0.1.1"
 description = "MX Robot Library"
 authors = ["MX3 Team"]
 
