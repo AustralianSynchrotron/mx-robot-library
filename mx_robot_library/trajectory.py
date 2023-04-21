@@ -8,6 +8,10 @@ from mx_robot_library.schemas.commands.trajectory import (
     RobotTrajCalibrateToolCmd,
     RobotTrajChangeToolCmd,
     RobotTrajDryToolCmd,
+    RobotTrajHotPuckMountSampleCmd,
+    RobotTrajHotPuckReturnSampleCmd,
+    RobotTrajHotPuckUnmountAndMountSampleCmd,
+    RobotTrajHotPuckUnmountSampleCmd,
     RobotTrajMountSampleCmd,
     RobotTrajMoveHomeDirectCmd,
     RobotTrajMoveHomeSafeCmd,
@@ -26,17 +30,230 @@ if TYPE_CHECKING:
     from .client import Client
 
 
+class HotPuck:
+    """Robot Hot Puck Trajectory"""
+
+    def __init__(self, parent: "Trajectory") -> None:
+        self._parent = parent
+
+    @validate_arguments
+    def mount(
+        self,
+        pin: Pin,
+        tool: Optional[Annotated[Tool, RobotTools]] = None,
+        pin_detect: bool = True,
+        prepick_pin: Optional[Pin] = None,
+        prepick_pin_detect: bool = True,
+        data_matrix_scan: bool = False,
+    ) -> bytes:
+        """Take a sample from the hot puck, optionally read its datamatrix
+        and mount it on the goniometer.
+        The sample needed for the next exchange can then be pre-picked.
+
+        Parameters
+        ----------
+        pin : Pin
+            Target pin.
+        tool : Optional[Tool], optional
+            Tool to call the operation with, by default None
+        pin_detect : bool, optional
+            Pin detection, by default True
+        prepick_pin : Optional[Pin], optional
+            Pre-pick pin, by default None
+        prepick_pin_detect : bool, optional
+            Pre-pick pin detection, by default True
+        data_matrix_scan : bool, optional
+            Datamatrix scan, by default False
+
+        Returns
+        -------
+        bytes
+            Reply to be decoded from robot.
+        """
+
+        if tool is None:
+            tool = self._parent._client.status.state.tool
+
+        _prepick_pin: Union[Pin, Literal[0]] = 0
+        _prepick_puck: Union[Puck, Literal[0]] = 0
+        _prepick_pin_type: Union[Puck, Literal[0]] = 0
+        if prepick_pin is not None:
+            _prepick_pin = prepick_pin
+            _prepick_puck = prepick_pin.puck
+            _prepick_pin_type = prepick_pin.type
+
+        return self._parent._send_cmd(
+            cmd=RobotTrajHotPuckMountSampleCmd,
+            args=[
+                tool,
+                pin.puck,
+                pin,
+                data_matrix_scan,
+                _prepick_puck,
+                _prepick_pin,
+                pin.type,
+                _prepick_pin_type,
+                (not pin_detect),
+                (not prepick_pin_detect),
+                self._parent._gonio_x_shift,
+                self._parent._gonio_y_shift,
+                self._parent._gonio_z_shift,
+            ],
+        )
+
+    @validate_arguments
+    def unmount(
+        self,
+        tool: Optional[Annotated[Tool, RobotTools]] = None,
+        data_matrix_scan: bool = False,
+    ) -> bytes:
+        """Get the sample from the diffractometer, optionally read its datamatrix
+        and put it back into the hot puck, in its memorized position.
+
+        Parameters
+        ----------
+        tool : Optional[Tool], optional
+            Tool to call the operation with, by default None
+        data_matrix_scan : bool, optional
+            Datamatrix scan, by default False
+
+        Returns
+        -------
+        bytes
+            Reply to be decoded from robot.
+        """
+
+        if tool is None:
+            tool = self._parent._client.status.state.tool
+
+        return self._parent._send_cmd(
+            RobotTrajHotPuckUnmountSampleCmd,
+            args=[
+                tool,
+                data_matrix_scan,
+                self._parent._gonio_x_shift,
+                self._parent._gonio_y_shift,
+                self._parent._gonio_z_shift,
+            ],
+        )
+
+    @validate_arguments
+    def unmount_then_mount(
+        self,
+        pin: Pin,
+        tool: Optional[Annotated[Tool, RobotTools]] = None,
+        pin_detect: bool = True,
+        prepick_pin: Optional[Pin] = None,
+        prepick_pin_detect: bool = True,
+        data_matrix_scan: bool = False,
+    ) -> bytes:
+        """Get the sample currently mounted on the goniometer,
+        put it back into the hot puck and mount the specified sample
+        on the goniometer optionally reading its datamatrix
+        (no heating of the gripper between both operations).
+
+        The sample needed for the next exchange can be then pre-picked
+        (only available for double grippers with process requiring soaking phases).
+
+        Parameters
+        ----------
+        pin : Pin
+            Target pin.
+        tool : Optional[Tool], optional
+            Tool to call the operation with, by default None
+        pin_detect : bool, optional
+            Pin detection, by default True
+        prepick_pin : Optional[Pin], optional
+            Pre-pick pin, by default None
+        prepick_pin_detect : bool, optional
+            Pre-pick pin detection, by default True
+        data_matrix_scan : bool, optional
+            Datamatrix scan, by default False
+
+        Returns
+        -------
+        bytes
+            Reply to be decoded from robot.
+        """
+
+        if tool is None:
+            tool = self._parent._client.status.state.tool
+
+        _prepick_pin: Union[Pin, Literal[0]] = 0
+        _prepick_puck: Union[Puck, Literal[0]] = 0
+        _prepick_pin_type: Union[Puck, Literal[0]] = 0
+        if prepick_pin is not None:
+            _prepick_pin = prepick_pin
+            _prepick_puck = prepick_pin.puck
+            _prepick_pin_type = prepick_pin.type
+
+        return self._parent._send_cmd(
+            cmd=RobotTrajHotPuckUnmountAndMountSampleCmd,
+            args=[
+                tool,
+                pin.puck,
+                pin,
+                data_matrix_scan,
+                _prepick_puck,
+                _prepick_pin,
+                pin.type,
+                _prepick_pin_type,
+                (not pin_detect),
+                (not prepick_pin_detect),
+                self._parent._gonio_x_shift,
+                self._parent._gonio_y_shift,
+                self._parent._gonio_z_shift,
+            ],
+        )
+
+    @validate_arguments
+    def return_pin(self, tool: Optional[Annotated[Tool, RobotTools]] = None) -> bytes:
+        """Put the sample in the gripper back in the hot puck to its memorized position
+        (generally used after a “recover” path).
+
+        Parameters
+        ----------
+        tool : Optional[Tool], optional
+            Tool to call the operation with, by default None
+
+        Returns
+        -------
+        bytes
+            Reply to be decoded from robot.
+        """
+
+        if tool is None:
+            tool = self._parent._client.status.state.tool
+
+        return self._parent._send_cmd(cmd=RobotTrajHotPuckReturnSampleCmd, args=[tool])
+
+
 class Trajectory:
     """Robot Trajectory"""
 
     def __init__(self, client: "Client") -> None:
         self._client = client
         self._port = self._client._cmd_port
+        self._hot_puck: Union[HotPuck, None] = None
 
         # Hard coding these for now, seems to work.
         self._gonio_x_shift: int = 0
         self._gonio_y_shift: int = 0
         self._gonio_z_shift: int = 0
+
+    @property
+    def hot_puck(self) -> HotPuck:
+        """Sub-client to handle calls to robot hot puck trajectory commands.
+
+        Returns
+        -------
+        HotPuck
+            Instance of the hot puck trajectory sub-client.
+        """
+
+        if not self._hot_puck:
+            self._hot_puck = HotPuck(parent=self)
+        return self._hot_puck
 
     def _send_cmd(
         self, cmd: type[BaseTrajectoryCmd], args: Optional[list] = None
