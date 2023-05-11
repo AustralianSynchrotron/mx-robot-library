@@ -20,27 +20,6 @@ class BaseStatusResponse(BaseModel):
         allow_mutation: bool = False
         anystr_strip_whitespace: bool = True
 
-    @staticmethod
-    @validate_arguments
-    def is_valid_id(id: Union[int, str]) -> bool:
-        """Simple method to check if an ID is valid.
-
-        Parameters
-        ----------
-        id : Union[int, str]
-            ID to validate.
-
-        Returns
-        -------
-        bool
-            True if valid, else False.
-        """
-
-        if isinstance(id, str):
-            return False
-
-        return id >= 1
-
     @classmethod
     @validate_arguments
     def _parse_raw_values(

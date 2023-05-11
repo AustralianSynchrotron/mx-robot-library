@@ -18,6 +18,11 @@ class ASCSettings(BaseSettings):
         description="Total number of pins per puck supported.",
         default=16,
     )
+    ASC_NUM_PLATES: int = Field(
+        title="Number of Trays",
+        description="Total number of trays supported.",
+        default=20,
+    )
     ASC_TOOLS: Tuple[Union[str, int], ...] = Field(
         title="Supported Tools",
         description="List of tools supported by this ASC.",

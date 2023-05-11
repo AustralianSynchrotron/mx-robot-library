@@ -19,18 +19,21 @@ from mx_robot_library.schemas.commands.trajectory import (
     RobotTrajPrepickSampleCmd,
     RobotTrajReadSampleCmd,
     RobotTrajReturnSampleCmd,
+    RobotTrajMountPlateCmd,
+    RobotTrajUnmountPlateCmd,
+    RobotTrajPickAndMovePlateCmd,
     RobotTrajSoakToolCmd,
     RobotTrajUnmountAndMountSampleCmd,
     RobotTrajUnmountSampleCmd,
 )
-from mx_robot_library.schemas.common.sample import Pin, Puck
+from mx_robot_library.schemas.common.sample import Pin, Puck, Plate
 from mx_robot_library.schemas.common.tool import RobotTools, Tool
 
 if TYPE_CHECKING:
     from .client import Client
 
 
-class HotPuck:
+class HotPuckTraj:
     """Robot Hot Puck Trajectory"""
 
     def __init__(self, parent: "Trajectory") -> None:
@@ -228,13 +231,106 @@ class HotPuck:
         return self._parent._send_cmd(cmd=RobotTrajHotPuckReturnSampleCmd, args=[tool])
 
 
+class PlateTraj:
+    """Robot Plate Trajectory"""
+
+    def __init__(self, parent: "Trajectory") -> None:
+        self._parent = parent
+
+    @validate_arguments
+    def mount(
+        self,
+        plate: Plate,
+        tool: Optional[Annotated[Tool, RobotTools]] = None,
+    ) -> bytes:
+        """Take a plate from the hotel and put in onto the goniometer.
+
+        Parameters
+        ----------
+        plate : Plate
+            Target plate.
+        tool : Optional[Tool], optional
+            Tool to call the operation with, by default None
+
+        Returns
+        -------
+        bytes
+            Reply to be decoded from robot.
+        """
+
+        if tool is None:
+            tool = self._parent._client.status.state.tool
+
+        return self._parent._send_cmd(
+            cmd=RobotTrajMountPlateCmd,
+            args=[tool, plate],
+        )
+
+    @validate_arguments
+    def unmount(
+        self,
+        tool: Optional[Annotated[Tool, RobotTools]] = None,
+    ) -> bytes:
+        """Take the plate from the goniometer and put it back in the hotel.
+
+        Parameters
+        ----------
+        tool : Optional[Tool], optional
+            Tool to call the operation with, by default None
+
+        Returns
+        -------
+        bytes
+            Reply to be decoded from robot.
+        """
+
+        if tool is None:
+            tool = self._parent._client.status.state.tool
+
+        return self._parent._send_cmd(
+            cmd=RobotTrajUnmountPlateCmd,
+            args=[tool],
+        )
+
+    @validate_arguments
+    def pick_and_move(
+        self,
+        plate: Plate,
+        tool: Optional[Annotated[Tool, RobotTools]] = None,
+    ) -> bytes:
+        """Take a plate from the hotel and move to the goniometer mounting position
+        without releasing it (path to test goniometer position).
+
+        Parameters
+        ----------
+        plate : Plate
+            Target plate.
+        tool : Optional[Tool], optional
+            Tool to call the operation with, by default None
+
+        Returns
+        -------
+        bytes
+            Reply to be decoded from robot.
+        """
+
+        if tool is None:
+            tool = self._parent._client.status.state.tool
+
+        return self._parent._send_cmd(
+            cmd=RobotTrajPickAndMovePlateCmd,
+            args=[tool, plate],
+        )
+
+
 class Trajectory:
     """Robot Trajectory"""
 
     def __init__(self, client: "Client") -> None:
         self._client = client
         self._port = self._client._cmd_port
-        self._hot_puck: Union[HotPuck, None] = None
+        self._hot_puck: Union[HotPuckTraj, None] = None
+        self._plate: Union[PlateTraj, None] = None
 
         # Hard coding these for now, seems to work.
         self._gonio_x_shift: int = 0
@@ -242,18 +338,32 @@ class Trajectory:
         self._gonio_z_shift: int = 0
 
     @property
-    def hot_puck(self) -> HotPuck:
+    def hot_puck(self) -> HotPuckTraj:
         """Sub-client to handle calls to robot hot puck trajectory commands.
 
         Returns
         -------
-        HotPuck
+        HotPuckTraj
             Instance of the hot puck trajectory sub-client.
         """
 
         if not self._hot_puck:
-            self._hot_puck = HotPuck(parent=self)
+            self._hot_puck = HotPuckTraj(parent=self)
         return self._hot_puck
+
+    @property
+    def plate(self) -> PlateTraj:
+        """Sub-client to handle calls to robot plate trajectory commands.
+
+        Returns
+        -------
+        PlateTraj
+            Instance of the plate trajectory sub-client.
+        """
+
+        if not self._plate:
+            self._plate = PlateTraj(parent=self)
+        return self._plate
 
     def _send_cmd(
         self, cmd: type[BaseTrajectoryCmd], args: Optional[list] = None
