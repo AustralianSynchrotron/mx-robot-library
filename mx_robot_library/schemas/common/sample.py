@@ -1,7 +1,7 @@
 from enum import Enum
+from typing import Any, Type, Union
 
 from pydantic import BaseModel, Field, validate_arguments
-from typing import Union, Type, Any
 from typing_extensions import Self
 
 from mx_robot_library.config import get_settings

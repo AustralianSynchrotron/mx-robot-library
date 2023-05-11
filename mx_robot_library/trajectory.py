@@ -12,21 +12,21 @@ from mx_robot_library.schemas.commands.trajectory import (
     RobotTrajHotPuckReturnSampleCmd,
     RobotTrajHotPuckUnmountAndMountSampleCmd,
     RobotTrajHotPuckUnmountSampleCmd,
+    RobotTrajMountPlateCmd,
     RobotTrajMountSampleCmd,
     RobotTrajMoveHomeDirectCmd,
     RobotTrajMoveHomeSafeCmd,
+    RobotTrajPickAndMovePlateCmd,
     RobotTrajPickAndMoveSampleCmd,
     RobotTrajPrepickSampleCmd,
     RobotTrajReadSampleCmd,
     RobotTrajReturnSampleCmd,
-    RobotTrajMountPlateCmd,
-    RobotTrajUnmountPlateCmd,
-    RobotTrajPickAndMovePlateCmd,
     RobotTrajSoakToolCmd,
     RobotTrajUnmountAndMountSampleCmd,
+    RobotTrajUnmountPlateCmd,
     RobotTrajUnmountSampleCmd,
 )
-from mx_robot_library.schemas.common.sample import Pin, Puck, Plate
+from mx_robot_library.schemas.common.sample import Pin, Plate, Puck
 from mx_robot_library.schemas.common.tool import RobotTools, Tool
 
 if TYPE_CHECKING:

@@ -1,8 +1,8 @@
-from typing import Optional, Union
-from typing_extensions import Self
 from types import MappingProxyType
+from typing import Optional, Union
 
 from pydantic import Field, validate_arguments
+from typing_extensions import Self
 
 from ..commands.status import RobotStatusCmds
 from ..common.path import Path, RobotPaths
@@ -61,19 +61,19 @@ class StateResponse(BaseStatusResponse):
         title="Jaw (A) Pin",
         description="Pin mounted in Jaw (A).",
         default=None,
-        position=(8,9),
+        position=(8, 9),
     )
     jaw_b_pin: Optional[Pin] = Field(
         title="Jaw (B) Pin",
         description="Pin mounted in Jaw (B).",
         default=None,
-        position=(10,11),
+        position=(10, 11),
     )
     goni_pin: Optional[Pin] = Field(
         title="Goni Pin",
         description="Pin mounted on the goniometer.",
         default=None,
-        position=(12,13),
+        position=(12, 13),
     )
     arm_plate: Optional[Plate] = Field(
         title="Arm Plate",
