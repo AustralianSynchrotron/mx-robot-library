@@ -747,7 +747,8 @@ class RobotTrajUnmountPlateCmd(BaseTrajectoryCmd):
 class RobotTrajPickAndMovePlateCmd(BaseTrajectoryCmd):
     """Robot Trajectory Pick And Move Plate Command
 
-    Take a plate from the hotel and put in onto the goniometer.
+    Take a plate from the hotel and move to the goniometer mounting position without
+    releasing it (path to test goniometer position).
 
     args : list[int]
         List containing two integers to select the tool and desired plate to pick.
