@@ -1,7 +1,9 @@
 import re
 from typing import Any, Dict, Optional, Union
+
 from pydantic import BaseModel, Field, validate_arguments
 from typing_extensions import Self
+
 from ...exceptions.base import PLCError
 from ..commands.status import RobotStatusCmds
 
@@ -146,9 +148,11 @@ class BaseStatusResponse(BaseResponse):
             _raw_inner: str = re.findall(match_str, raw)[0]
             _raw_values = _raw_inner.split(sep=",")
 
-        res.update({
-            "raw_values": _raw_values,
-        })
+        res.update(
+            {
+                "raw_values": _raw_values,
+            }
+        )
 
         return res
 

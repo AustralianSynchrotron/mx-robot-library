@@ -1,8 +1,9 @@
+from enum import Enum
 from socket import AF_INET, SOCK_STREAM, socket
 from typing import TYPE_CHECKING, Any
-from typing_extensions import Self
-from enum import Enum
+
 from pydantic import validate_arguments
+from typing_extensions import Self
 
 from ..config import get_settings
 from ..logger import get_logger

@@ -1,17 +1,18 @@
 [tool.poetry]
 name = "mx-robot-library"
-version = "0.1.2"
+version = "0.1.3"
 description = "MX Robot Library"
 authors = ["MX3 Team"]
 
 [[tool.poetry.source]]
 name = "cachedpypi"
 url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
-default = true
+priority = "default"
 
 [[tool.poetry.source]]
 name = "asciprod"
 url = "https://pypi.asci.synchrotron.org.au/asci/prod/+simple"
+priority = "supplemental"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"

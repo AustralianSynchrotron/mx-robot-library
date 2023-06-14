@@ -1,13 +1,16 @@
 from typing import Optional, Union
-from typing_extensions import TypeAlias
+
 from pydantic import Field
 from pydantic.dataclasses import dataclass
+from typing_extensions import TypeAlias
+
 from ..base import PLCError
 
 
 @dataclass(frozen=True)
 class LidMovingError(PLCError):
     """Lid Moving Error"""
+
     # Disabled when lid is moving
 
     response: Optional[str] = Field(
@@ -31,6 +34,7 @@ class LidMovingError(PLCError):
 @dataclass(frozen=True)
 class PowerDisabled(PLCError):
     """Power Disabled"""
+
     # Robot power disabled
 
     response: Optional[str] = Field(
@@ -50,6 +54,7 @@ class PowerDisabled(PLCError):
 @dataclass(frozen=True)
 class NotReadyError(PLCError):
     """Not Ready Error"""
+
     # Robot not ready
 
     response: Optional[str] = Field(
@@ -69,6 +74,7 @@ class NotReadyError(PLCError):
 @dataclass(frozen=True)
 class ChangeToolError(PLCError):
     """Change Tool Error"""
+
     # Change tool first
 
     response: Optional[str] = Field(
@@ -88,6 +94,7 @@ class ChangeToolError(PLCError):
 @dataclass(frozen=True)
 class PositionRejected(PLCError):
     """Position Rejected"""
+
     # Rejected - Trajectory must start at position: HOME
     # Rejected - Trajectory must start at position: SOAK
 
@@ -108,6 +115,7 @@ class PositionRejected(PLCError):
 @dataclass(frozen=True)
 class ToolAlreadyEquiped(PLCError):
     """Tool Already Equiped"""
+
     # Tool already equipped
 
     response: Optional[str] = Field(

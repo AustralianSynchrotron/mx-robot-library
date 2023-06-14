@@ -1,8 +1,9 @@
 import re
-from typing import Union, TYPE_CHECKING
-from typing_extensions import TypeAlias
 from ipaddress import IPv4Address
+from typing import TYPE_CHECKING, Union
+
 from pydantic import ConstrainedStr
+from typing_extensions import TypeAlias
 
 if TYPE_CHECKING:
     from pydantic.typing import CallableGenerator

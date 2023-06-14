@@ -2,8 +2,8 @@ from typing import Union
 
 from pydantic import validate_arguments
 
+from .client.base import CmdChannel, SubClient
 from .schemas.common.sample import Pin, PinType, Puck
-from .client.base import SubClient, CmdChannel
 
 
 class Utils(SubClient, channel=CmdChannel.CMD):

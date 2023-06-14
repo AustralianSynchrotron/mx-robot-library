@@ -1,13 +1,16 @@
 from typing import Optional, Union
-from typing_extensions import TypeAlias
+
 from pydantic import Field
 from pydantic.dataclasses import dataclass
+from typing_extensions import TypeAlias
+
 from ..base import PLCError
 
 
 @dataclass(frozen=True)
 class CmdNotFound(PLCError):
     """Command Not Found"""
+
     # Command not found
 
     response: Optional[str] = Field(
@@ -27,6 +30,7 @@ class CmdNotFound(PLCError):
 @dataclass(frozen=True)
 class ManualModeError(PLCError):
     """Manual Mode Error"""
+
     # Remote mode requested
 
     response: Optional[str] = Field(
@@ -46,6 +50,7 @@ class ManualModeError(PLCError):
 @dataclass(frozen=True)
 class DoorOpenError(PLCError):
     """Door Open Error"""
+
     # Doors must be closed
 
     response: Optional[str] = Field(
@@ -65,6 +70,7 @@ class DoorOpenError(PLCError):
 @dataclass(frozen=True)
 class EmergencyStop(PLCError):
     """Emergency Stop"""
+
     # Emergency stop triggered
 
     response: Optional[str] = Field(
@@ -84,6 +90,7 @@ class EmergencyStop(PLCError):
 @dataclass(frozen=True)
 class SystemFault(PLCError):
     """System Fault"""
+
     # System fault active
 
     response: Optional[str] = Field(
@@ -103,6 +110,7 @@ class SystemFault(PLCError):
 @dataclass(frozen=True)
 class InconsistentParams(PLCError):
     """Inconsistent Parameters"""
+
     # Inconsistent parameters
 
     response: Optional[str] = Field(
@@ -122,6 +130,7 @@ class InconsistentParams(PLCError):
 @dataclass(frozen=True)
 class OrderRejected(PLCError):
     """Order Rejected"""
+
     # Order rejected
 
     response: Optional[str] = Field(
@@ -141,6 +150,7 @@ class OrderRejected(PLCError):
 @dataclass(frozen=True)
 class PathRunningError(PLCError):
     """Path Running Error"""
+
     # Disabled when path is running
     # Path already running
 
@@ -161,6 +171,7 @@ class PathRunningError(PLCError):
 @dataclass(frozen=True)
 class SafetyRestartRequired(PLCError):
     """Safety Restart Required"""
+
     # Safety restart needed
     # A safety restart is required ("Restart" button on WMS)
 
@@ -181,6 +192,7 @@ class SafetyRestartRequired(PLCError):
 @dataclass(frozen=True)
 class DeviceNotResponding(PLCError):
     """Device Not Responding"""
+
     # Device not responding
 
     response: Optional[str] = Field(

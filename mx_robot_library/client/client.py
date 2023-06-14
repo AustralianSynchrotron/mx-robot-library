@@ -1,4 +1,5 @@
 from typing import Any, Union
+
 from typing_extensions import Self
 
 from ..common import Common
@@ -7,8 +8,8 @@ from ..exceptions.client import ClientReadonly
 from ..logger import get_logger
 from ..status import Status
 from ..trajectory import Trajectory
-from ..utils import Utils
 from ..types import HostAddress
+from ..utils import Utils
 from .base import RootClient
 
 logger = get_logger()

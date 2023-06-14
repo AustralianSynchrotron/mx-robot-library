@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING, Optional, Union
 from pydantic import validate_arguments
 from typing_extensions import Annotated
 
+from ..client.base import CmdChannel, SubClient
+from ..decorators import check_tool, raise_ex, wait_for_path
 from ..schemas.commands.trajectory import (
     BaseTrajectoryCmd,
     RobotTrajCalibrateToolCmd,
@@ -12,11 +14,9 @@ from ..schemas.commands.trajectory import (
     RobotTrajMoveHomeSafeCmd,
     RobotTrajSoakToolCmd,
 )
-from ..schemas.responses.trajectory import TrajectoryResponse
-from ..schemas.common.tool import RobotTools, Tool
 from ..schemas.common.path import RobotPaths
-from ..client.base import SubClient, CmdChannel
-from ..decorators import check_tool, raise_ex, wait_for_path
+from ..schemas.common.tool import RobotTools, Tool
+from ..schemas.responses.trajectory import TrajectoryResponse
 from .hotpuck import HotPuckTraj
 from .plate import PlateTraj
 from .puck import PuckTraj
@@ -137,7 +137,9 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.RECOVER)
     @validate_arguments
-    def recover(self, tool: Optional[Annotated[Tool, RobotTools]] = None) -> TrajectoryResponse:
+    def recover(
+        self, tool: Optional[Annotated[Tool, RobotTools]] = None
+    ) -> TrajectoryResponse:
         """Recover the robot arm back to home position.
 
         This command works different to the "home" trajectory, as the robot will move

@@ -8,12 +8,13 @@ from mx_robot_library.schemas.commands.trajectory import (
     RobotTrajPickAndMovePlateCmd,
     RobotTrajUnmountPlateCmd,
 )
-from ..schemas.responses.trajectory import TrajectoryResponse
-from ..schemas.common.sample import Plate
-from ..schemas.common.tool import RobotTools, Tool
-from ..schemas.common.path import RobotPaths
+
 from ..client.base import CmdChannel
 from ..decorators import check_tool, raise_ex, wait_for_path
+from ..schemas.common.path import RobotPaths
+from ..schemas.common.sample import Plate
+from ..schemas.common.tool import RobotTools, Tool
+from ..schemas.responses.trajectory import TrajectoryResponse
 from .base import SubTrajectory
 
 

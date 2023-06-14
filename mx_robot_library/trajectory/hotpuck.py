@@ -3,18 +3,18 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 from pydantic import validate_arguments
 from typing_extensions import Annotated
 
+from ..client.base import CmdChannel
+from ..decorators import check_tool, raise_ex, wait_for_path
 from ..schemas.commands.trajectory import (
     RobotTrajHotPuckMountSampleCmd,
     RobotTrajHotPuckReturnSampleCmd,
     RobotTrajHotPuckUnmountAndMountSampleCmd,
     RobotTrajHotPuckUnmountSampleCmd,
 )
-from ..schemas.responses.trajectory import TrajectoryResponse
+from ..schemas.common.path import RobotPaths
 from ..schemas.common.sample import Pin, Puck
 from ..schemas.common.tool import RobotTools, Tool
-from ..schemas.common.path import RobotPaths
-from ..client.base import CmdChannel
-from ..decorators import check_tool, raise_ex, wait_for_path
+from ..schemas.responses.trajectory import TrajectoryResponse
 from .base import SubTrajectory
 
 if TYPE_CHECKING:

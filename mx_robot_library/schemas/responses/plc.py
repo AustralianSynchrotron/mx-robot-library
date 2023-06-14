@@ -2,7 +2,6 @@ from pydantic import Field, conlist, validate_arguments, validator
 from typing_extensions import Self
 
 from ...config import get_settings
-
 from ..commands.status import RobotStatusCmds
 from .base import BaseStatusResponse, compute_error
 

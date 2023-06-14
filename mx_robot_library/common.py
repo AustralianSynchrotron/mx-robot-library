@@ -1,10 +1,10 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import validate_arguments
 
-from .schemas.commands.general import RobotGeneralCmd, RobotGeneralCmds
-from .client.base import SubClient, CmdChannel
+from .client.base import CmdChannel, SubClient
 from .decorators import raise_ex
+from .schemas.commands.general import RobotGeneralCmd, RobotGeneralCmds
 
 if TYPE_CHECKING:
     from .client import Client

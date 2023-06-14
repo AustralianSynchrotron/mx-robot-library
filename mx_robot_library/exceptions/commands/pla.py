@@ -1,13 +1,16 @@
 from typing import Optional, Type
-from typing_extensions import TypeAlias
+
 from pydantic import Field
 from pydantic.dataclasses import dataclass
+from typing_extensions import TypeAlias
+
 from ..base import PLCError
 
 
 @dataclass(frozen=True)
 class NotPointingError(PLCError):
     """Not Pointing Error"""
+
     # Point a puck first
 
     response: Optional[str] = Field(

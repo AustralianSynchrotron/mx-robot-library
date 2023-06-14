@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING, Optional
 
+from ..client.base import CmdChannel, SubClient
 from ..schemas.responses.trajectory import TrajectoryResponse
-from ..client.base import SubClient, CmdChannel
 
 if TYPE_CHECKING:
-    from .trajectory import Trajectory
     from ..client.client import Client
     from ..schemas.commands.trajectory import BaseTrajectoryCmd
+    from .trajectory import Trajectory
 
 
 class SubTrajectory(SubClient, channel=CmdChannel.CMD):

@@ -1,19 +1,20 @@
-from typing import Any, Annotated, Optional, TYPE_CHECKING
-from time import sleep, time
-from functools import wraps
-from inspect import signature, BoundArguments
 from collections import OrderedDict
+from functools import wraps
+from inspect import BoundArguments, signature
+from time import sleep, time
+from typing import TYPE_CHECKING, Annotated, Any, Optional
+
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 
+from .client.base import BaseClient, RootClient, SubClient
+from .exceptions.commands.common import SystemFault
+from .exceptions.commands.trajectory import ChangeToolError, ToolAlreadyEquiped
+from .logger import get_logger
+from .schemas.common.path import Path, RobotPaths
 from .schemas.common.tool import RobotTools, Tool
-from .schemas.common.path import RobotPaths, Path
 from .schemas.responses.base import BaseResponse
 from .schemas.responses.trajectory import TrajectoryResponse
-from .exceptions.commands.trajectory import ChangeToolError, ToolAlreadyEquiped
-from .exceptions.commands.common import SystemFault
-from .logger import get_logger
-from .client.base import RootClient, BaseClient, SubClient
 
 if TYPE_CHECKING:
     from .client import Client
@@ -68,7 +69,6 @@ def inject_client(
     """
 
     def _inject_client(_func: AnyCallable) -> AnyCallable:
-
         @wraps(_func)
         def wrapper_function(
             *args,
@@ -87,6 +87,7 @@ def inject_client(
 
             if client is not None:
                 from .client import Client
+
                 if isinstance(client, RootClient):
                     # Upgrade root client to full client instance
                     client = Client(
@@ -129,14 +130,12 @@ def inject_tool(
     """
 
     def _inject_tool(_func: AnyCallable) -> AnyCallable:
-
         @wraps(_func)
         def wrapper_function(
             *args,
             tool: Optional[Annotated[Tool, RobotTools]] = tool,
             **kwargs,
         ):
-
             if tool is not None and not isinstance(tool, Tool):
                 # Try to convert tool value to instance of Tool
                 try:
@@ -183,7 +182,6 @@ def check_tool(
     """
 
     def _check_tool(_func: AnyCallable) -> AnyCallable:
-
         @inject_tool(tool=tool)
         @inject_client(client=client)
         @wraps(_func)
@@ -202,7 +200,7 @@ def check_tool(
                     )
                     if isinstance(_res.error, ToolAlreadyEquiped):
                         raise _res.error
-                except ToolAlreadyEquiped as ex:
+                except ToolAlreadyEquiped:
                     # Tool is already equiped
                     logger.debug("Auto tool change failed, tool already equipped.")
 
@@ -266,7 +264,6 @@ def raise_ex(
     """
 
     def _raise_ex(_func: AnyCallable) -> AnyCallable:
-
         @inject_client(client=client)
         @wraps(_func)
         def wrapper_function(
@@ -274,7 +271,6 @@ def raise_ex(
             client: Optional["Client"] = None,
             **kwargs,
         ):
-
             # Call method
             res = _func(*args, **kwargs)
 
@@ -313,7 +309,6 @@ def wait_for_path(
         always: bool = always,
         timeout: float = timeout,
     ) -> AnyCallable:
-
         @inject_client(client=client)
         @wraps(_func)
         def wrapper_function(
@@ -322,7 +317,6 @@ def wait_for_path(
             wait: bool = False,
             **kwargs,
         ):
-
             # Call method
             res = _func(*args, **kwargs)
 

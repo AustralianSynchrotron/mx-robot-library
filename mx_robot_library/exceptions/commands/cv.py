@@ -1,13 +1,16 @@
 from typing import Optional, Union
-from typing_extensions import TypeAlias
+
 from pydantic import Field
 from pydantic.dataclasses import dataclass
+from typing_extensions import TypeAlias
+
 from ..base import PLCError
 
 
 @dataclass(frozen=True)
 class DewarClosedError(PLCError):
     """Dewar Closed Error"""
+
     # Open dewar first
 
     response: Optional[str] = Field(
@@ -27,6 +30,7 @@ class DewarClosedError(PLCError):
 @dataclass(frozen=True)
 class CVPositionError(PLCError):
     """Cryo-Vision Position Error"""
+
     # Robot must be at SOAK or HOME
 
     response: Optional[str] = Field(
@@ -46,6 +50,7 @@ class CVPositionError(PLCError):
 @dataclass(frozen=True)
 class ExternalLightingDisabled(PLCError):
     """External Lighting Disabled"""
+
     # Enable external lighting first
 
     response: Optional[str] = Field(
@@ -62,4 +67,6 @@ class ExternalLightingDisabled(PLCError):
     )
 
 
-cv_errors: TypeAlias = Union[DewarClosedError, CVPositionError, ExternalLightingDisabled]
+cv_errors: TypeAlias = Union[
+    DewarClosedError, CVPositionError, ExternalLightingDisabled
+]
