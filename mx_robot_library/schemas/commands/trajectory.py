@@ -87,6 +87,9 @@ class BaseTrajectoryCmd(BaseModel):
     class Config:
         validate_assignment: bool = True
 
+    def __str__(self) -> str:
+        return str(self.sub_cmd)
+
     def __setattr__(self, name: str, value: Any) -> Any:
         res = super().__setattr__(name, value)
 

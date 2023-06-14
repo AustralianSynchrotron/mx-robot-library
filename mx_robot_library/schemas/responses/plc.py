@@ -1,10 +1,10 @@
-from pydantic import Field, conlist, validate_arguments
+from pydantic import Field, conlist, validate_arguments, validator
 from typing_extensions import Self
 
-from mx_robot_library.config import get_settings
+from ...config import get_settings
 
 from ..commands.status import RobotStatusCmds
-from .base import BaseStatusResponse
+from .base import BaseStatusResponse, compute_error
 
 config = get_settings()
 
@@ -22,6 +22,13 @@ class PLCInputsResponse(BasePLCResponse):
     """PLC Inputs Response Model"""
 
     door_closed: bool = Field(title="Door Closed")
+
+    _compute_error = validator(
+        "error",
+        pre=True,
+        always=True,
+        allow_reuse=True,
+    )(compute_error)
 
     @classmethod
     @validate_arguments
@@ -54,6 +61,13 @@ class PLCOutputsResponse(BasePLCResponse):
         title="Puck Presense",
         description="Puck presense mapping.",
     )
+
+    _compute_error = validator(
+        "error",
+        pre=True,
+        always=True,
+        allow_reuse=True,
+    )(compute_error)
 
     @classmethod
     @validate_arguments

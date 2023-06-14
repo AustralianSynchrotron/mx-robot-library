@@ -1,5 +1,4 @@
-class RobotException(Exception):
-    """General Robot Exception"""
+from .base import RobotException
 
 
 class Readonly(RobotException):

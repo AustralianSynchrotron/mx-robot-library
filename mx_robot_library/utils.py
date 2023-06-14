@@ -1,19 +1,13 @@
-from typing import TYPE_CHECKING, Union
+from typing import Union
 
 from pydantic import validate_arguments
 
-from mx_robot_library.schemas.common.sample import Pin, PinType, Puck
-
-if TYPE_CHECKING:
-    from .client import Client
+from .schemas.common.sample import Pin, PinType, Puck
+from .client.base import SubClient, CmdChannel
 
 
-class Utils:
+class Utils(SubClient, channel=CmdChannel.CMD):
     """Robot Utils"""
-
-    def __init__(self, client: "Client") -> None:
-        self._client = client
-        self._port = self._client._cmd_port
 
     @validate_arguments
     def get_puck(self, id: int) -> Puck:

@@ -1,7 +1,7 @@
 from types import MappingProxyType
 from typing import Optional, Union
 
-from pydantic import Field, validate_arguments
+from pydantic import Field, validate_arguments, validator
 from typing_extensions import Self
 
 from ..commands.status import RobotStatusCmds
@@ -9,7 +9,7 @@ from ..common.path import Path, RobotPaths
 from ..common.position import Position, RobotPositions
 from ..common.sample import Pin, Plate
 from ..common.tool import Tool
-from .base import BaseStatusResponse
+from .base import BaseStatusResponse, compute_error
 
 
 class StateResponse(BaseStatusResponse):
@@ -109,6 +109,13 @@ class StateResponse(BaseStatusResponse):
         description="Last information message from PLC.",
         position=28,
     )
+
+    _compute_error = validator(
+        "error",
+        pre=True,
+        always=True,
+        allow_reuse=True,
+    )(compute_error)
 
     @classmethod
     def _get_position_map(
