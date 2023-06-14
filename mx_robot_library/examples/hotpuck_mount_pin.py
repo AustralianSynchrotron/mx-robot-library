@@ -1,22 +1,13 @@
-from time import sleep
-
 from mx_robot_library.client import Client
-from mx_robot_library.schemas.common.path import RobotPaths
+from mx_robot_library.schemas.common.sample import Pin
 
 # Create a new client instance
 robot = Client(host="192.168.0.0", readonly=False)
 
-# Try to mount a pin
-pin = robot.utils.get_pin(id=5, puck=1)
-msg = robot.trajectory.hot_puck.mount(pin=pin)
+PIN_TO_MOUNT = Pin(id=1, puck=101)
 
-# Wait until operation starts
-while robot.status.state.path != RobotPaths.HOTPUCK_PUT:
-    sleep(0.5)
-
-# Wait until operation ends
-while robot.status.state.path != RobotPaths.UNDEFINED:
-    sleep(0.5)
+# Try to mount a pin, wait to complete
+msg = robot.trajectory.hot_puck.mount(pin=PIN_TO_MOUNT, wait=True)
 
 # Check that the pin on the goni, matches expectations
-assert robot.status.state.goni_pin == pin
+assert robot.status.state.goni_pin == PIN_TO_MOUNT

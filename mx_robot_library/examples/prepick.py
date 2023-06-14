@@ -1,15 +1,13 @@
 from mx_robot_library.client import Client
+from mx_robot_library.schemas.common.sample import Pin
 
 # Create a new client instance
 robot = Client(host="192.168.0.0", readonly=False)
 
-# Try to pre-pick a pin, loading it into the gripper
-pin = robot.utils.get_pin(id=5, puck=1)
-msg = robot.trajectory.prepick(pin=pin)
+PREPICK_PIN = Pin(id=5, puck=1)
 
-# # Wait until operation is complete
-# while robot.status.state.path != RobotPaths.UNDEFINED:
-#     sleep(0.5)
+# Try to pre-pick a pin, loading it into the gripper, wait to complete
+msg = robot.trajectory.puck.prepick(pin=PREPICK_PIN, wait=True)
 
-# # Check that the pin on the goni, matches expectations
-# assert robot.status.state.goni_pin == pin
+# Check that the pre-picked pin, matches expectations
+assert robot.status.state.jaw_b_pin == PREPICK_PIN
