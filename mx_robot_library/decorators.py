@@ -17,7 +17,9 @@ from .schemas.responses.trajectory import TrajectoryResponse
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
+
     from .client import Client
+
     AnyCallableT = TypeVar("AnyCallableT", bound=AnyCallable)
 
 logger = get_logger()
