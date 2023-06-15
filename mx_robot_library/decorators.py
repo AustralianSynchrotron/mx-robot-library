@@ -303,7 +303,28 @@ def wait_for_path(
     timeout: float = 120.0,
     client: Optional[RootClient] = None,
 ) -> "AnyCallableT":
-    """ """
+    """Wait for robot path operation to complete.
+
+    Parameters
+    ----------
+    func : Optional[AnyCallable], optional
+        Method to be wrapped, by default None.
+    path : Annotated[Path, RobotPaths]
+        Path to wait for.
+    end_path : Annotated[Path, RobotPaths], optional
+        Path indicating starting path has completed, by default RobotPaths.UNDEFINED.
+    always : bool, optional
+        Whether to always wait, ignoring the "wait" flag, by default False.
+    timeout : float, optional
+        Max timeout, by default 120.0.
+    client : Optional[RootClient], optional
+        Instance of the robot client, by default None.
+
+    Returns
+    -------
+    AnyCallable
+        Wrapped method call.
+    """
 
     def _wait_for_path(
         _func: "AnyCallableT",
