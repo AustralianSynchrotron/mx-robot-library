@@ -29,6 +29,8 @@ class PlateTraj(SubTrajectory, channel=CmdChannel.CMD):
         self,
         plate: Plate,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Take a plate from the hotel and put in onto the goniometer.
 
@@ -57,6 +59,8 @@ class PlateTraj(SubTrajectory, channel=CmdChannel.CMD):
     def unmount(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Take the plate from the goniometer and put it back in the hotel.
 
@@ -83,6 +87,8 @@ class PlateTraj(SubTrajectory, channel=CmdChannel.CMD):
         self,
         plate: Plate,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Get the plate currently mounted on the goniometer,
         put it back in the hotel and mount the specified plate
@@ -115,6 +121,8 @@ class PlateTraj(SubTrajectory, channel=CmdChannel.CMD):
         self,
         plate: Plate,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Take a plate from the hotel and move to the goniometer mounting position
         without releasing it (path to test goniometer position).

@@ -44,6 +44,8 @@ class HotPuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         prepick_pin: Optional[Pin] = None,
         prepick_pin_detect: bool = True,
         data_matrix_scan: bool = False,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Take a sample from the hot puck, optionally read its datamatrix
         and mount it on the goniometer.
@@ -105,6 +107,8 @@ class HotPuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
         data_matrix_scan: bool = False,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Get the sample from the diffractometer, optionally read its datamatrix
         and put it back into the hot puck, in its memorized position.
@@ -145,6 +149,8 @@ class HotPuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         prepick_pin: Optional[Pin] = None,
         prepick_pin_detect: bool = True,
         data_matrix_scan: bool = False,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Get the sample currently mounted on the goniometer,
         put it back into the hot puck and mount the specified sample
@@ -209,6 +215,8 @@ class HotPuckTraj(SubTrajectory, channel=CmdChannel.CMD):
     def return_pin(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Put the sample in the gripper back in the hot puck to its memorized position
         (generally used after a “recover” path).

@@ -44,7 +44,7 @@ class Status(SubClient, channel=CmdChannel.STATUS):
     @property
     @raise_ex
     @cached(cache=TTLCache(maxsize=1, ttl=0.05))
-    def state(self) -> StateResponse:
+    def state(self, *args, **kwargs) -> StateResponse:
         """Read robot state.
 
         NOTE: State object is cached for 50ms to avoid spamming the robot controller.
@@ -64,7 +64,7 @@ class Status(SubClient, channel=CmdChannel.STATUS):
     @property
     @raise_ex
     @cached(cache=TTLCache(maxsize=1, ttl=0.05))
-    def plc_inputs(self) -> PLCInputsResponse:
+    def plc_inputs(self, *args, **kwargs) -> PLCInputsResponse:
         """Read PLC inputs.
 
         NOTE: Output is cached for 50ms to avoid spamming the robot controller.
@@ -84,7 +84,7 @@ class Status(SubClient, channel=CmdChannel.STATUS):
     @property
     @raise_ex
     @cached(cache=TTLCache(maxsize=1, ttl=0.05))
-    def plc_outputs(self) -> PLCOutputsResponse:
+    def plc_outputs(self, *args, **kwargs) -> PLCOutputsResponse:
         """Read PLC outputs.
 
         NOTE: Output is cached for 50ms to avoid spamming the robot controller.
@@ -104,7 +104,7 @@ class Status(SubClient, channel=CmdChannel.STATUS):
     @property
     @raise_ex
     @cached(cache=TTLCache(maxsize=1, ttl=0.05))
-    def sample_data(self) -> SampleDataResponse:
+    def sample_data(self, *args, **kwargs) -> SampleDataResponse:
         """Read sample data.
 
         NOTE: Output is cached for 50ms to avoid spamming the robot controller.
@@ -121,7 +121,7 @@ class Status(SubClient, channel=CmdChannel.STATUS):
             obj=self._raw_sample_data,
         )
 
-    def get_loaded_pucks(self):
+    def get_loaded_pucks(self, *args, **kwargs):
         """ """
 
         # Read populated puck positions from PLC outputs 56(1)->84(29)

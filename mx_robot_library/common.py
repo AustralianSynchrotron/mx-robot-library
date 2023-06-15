@@ -54,7 +54,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
     @power.setter
     @raise_ex
     @validate_arguments
-    def power(self, value: bool) -> None:
+    def power(self, value: bool, *args, **kwargs) -> None:
         """Set power status of the robot arm.
 
         Parameters
@@ -70,7 +70,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @validate_arguments
-    def reset(self) -> bytes:
+    def reset(self, *args, **kwargs) -> bytes:
         """Acknowledge and reset security fault and allow user to bring power back.
 
         Returns
@@ -82,7 +82,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @validate_arguments
-    def speed_up(self) -> bytes:
+    def speed_up(self, *args, **kwargs) -> bytes:
         """Increase robot speed (range from 0.01% to 100%).
 
         Returns
@@ -94,7 +94,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @validate_arguments
-    def slow_down(self) -> bytes:
+    def slow_down(self, *args, **kwargs) -> bytes:
         """Decrease robot speed (range from 0.01% to 100%).
 
         Returns

@@ -115,6 +115,8 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     def home(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Move the robot arm back to home position.
 
@@ -138,7 +140,10 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @wait_for_path(path=RobotPaths.RECOVER)
     @validate_arguments
     def recover(
-        self, tool: Optional[Annotated[Tool, RobotTools]] = None
+        self,
+        tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Recover the robot arm back to home position.
 
@@ -165,7 +170,12 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @wait_for_path(path=RobotPaths.TEACH_GONI)
     @check_tool(tool=RobotTools.LASER_TOOL)
     @validate_arguments
-    def teach_goni(self) -> TrajectoryResponse:
+    def teach_goni(
+        self,
+        tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
+    ) -> TrajectoryResponse:
         """ """
 
         # RobotTrajTeachGonioCmd
@@ -178,6 +188,8 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     def teach_puck(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """ """
 
@@ -191,6 +203,8 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     def teach_dewar(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """ """
 
@@ -204,6 +218,8 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     def teach_plate_holder(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """ """
 
@@ -216,6 +232,8 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     def teach_hotpuck(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """ """
 
@@ -228,6 +246,8 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     def soak(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Chilling of the gripper (only for grippers with process
         requiring drying and soaking phases).
@@ -254,6 +274,8 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     def dry(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Dry the gripper.
 
@@ -278,7 +300,12 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.CHANGE_TOOL)
     @validate_arguments
-    def change_tool(self, tool: Annotated[Tool, RobotTools]) -> TrajectoryResponse:
+    def change_tool(
+        self,
+        tool: Annotated[Tool, RobotTools],
+        *args,
+        **kwargs,
+    ) -> TrajectoryResponse:
         """Launch automatic tool change, the robot will put its current tool
         on the parking and pick the one given in argument.
 
@@ -298,7 +325,12 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.TOOL_CAL)
     @validate_arguments
-    def calibrate_tool(self, tool: Annotated[Tool, RobotTools]) -> TrajectoryResponse:
+    def calibrate_tool(
+        self,
+        tool: Annotated[Tool, RobotTools],
+        *args,
+        **kwargs,
+    ) -> TrajectoryResponse:
         """Start gripper or laser tool calibration until the precision
         criterion is reached.
 

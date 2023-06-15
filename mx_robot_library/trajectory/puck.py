@@ -47,6 +47,8 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         prepick_pin: Optional[Pin] = None,
         prepick_pin_detect: bool = True,
         data_matrix_scan: bool = False,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Take a sample from the Dewar, optionally read its datamatrix
         and mount it on the goniometer.
@@ -108,6 +110,8 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
         data_matrix_scan: bool = False,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Get the sample from the diffractometer, optionally read its datamatrix
         and put it back into the Dewar, in its memorized position.
@@ -148,6 +152,8 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         prepick_pin: Optional[Pin] = None,
         prepick_pin_detect: bool = True,
         data_matrix_scan: bool = False,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Get the sample currently mounted on the goniometer,
         put it back into the Dewar and mount the specified sample
@@ -215,6 +221,8 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         tool: Optional[Annotated[Tool, RobotTools]] = None,
         pin_detect: bool = True,
         data_matrix_scan: bool = False,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Pick a sample for the next mounting, optionally read its
         datamatrix and go back to soaking position (only
@@ -251,6 +259,8 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         pin: Pin,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
         pin_detect: bool = True,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Take a sample from the Dewar, read the datamatrix
         and put the sample back into the Dewar.
@@ -282,6 +292,8 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
     def return_pin(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Put the sample in the gripper back in the Dewar to its memorized position
         (generally used after a “recover” path).
@@ -308,6 +320,8 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
         pin: Pin,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
         pin_detect: bool = True,
+        *args,
+        **kwargs,
     ) -> TrajectoryResponse:
         """Take a sample from the Dewar and move to the goniometer mounting position
         without releasing it (path to test goniometer position).
