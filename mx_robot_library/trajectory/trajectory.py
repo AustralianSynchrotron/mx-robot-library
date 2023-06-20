@@ -298,7 +298,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
         return self.send_cmd(cmd=RobotTrajDryToolCmd, args=[tool])
 
     @raise_ex
-    @wait_for_path(path=RobotPaths.CHANGE_TOOL)
+    @wait_for_path(path=RobotPaths.CHANGE_TOOL, timeout=240)
     @validate_arguments
     def change_tool(
         self,

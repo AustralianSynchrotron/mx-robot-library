@@ -7,6 +7,8 @@ from typing_extensions import Self
 from ...exceptions.base import PLCError
 from ..commands.status import RobotStatusCmds
 
+ROBOT_STATUS_CMD_STRS: tuple[str, ...] = tuple([str(_val) for _val in RobotStatusCmds])
+
 
 def compute_error(v: Any, values: Dict[str, Any]) -> Union[Dict[str, Any], Any, None]:
     """Compute error from parsed "cmd" and "msg".
@@ -28,7 +30,21 @@ def compute_error(v: Any, values: Dict[str, Any]) -> Union[Dict[str, Any], Any, 
         _cmd: Any = values.get("cmd")
         _resp: Any = values.get("msg")
 
-        if isinstance(_resp, str) and _resp == _cmd:
+        if _cmd in ROBOT_STATUS_CMD_STRS and isinstance(_resp, str):
+            # Response is for a status command
+            _cmd: str
+            match_str = re.compile(f"(?<={_cmd}\().*(?=\))", re.S)  # noqa: W605
+            _matches: list[str] = re.findall(match_str, _resp)
+            if len(_matches) != 1:
+                # Response doesn't match expected format
+                return {"cmd": _cmd, "response": _resp}
+            try:
+                # If we can split on "," without hitting an exception, no error exists
+                _matches[0].split(sep=",")
+                return None
+            except Exception:
+                return {"cmd": _cmd, "response": _resp}
+        elif isinstance(_resp, str) and _resp == _cmd:
             # Response echos command, so no error
             return None
         elif isinstance(_cmd, str) and isinstance(_resp, str):

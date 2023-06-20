@@ -133,9 +133,9 @@ class SubClient(BaseClient):
             Sub-client command channel.
         """
         if channel == CmdChannel.CMD:
-            cls.channel == CmdChannel.CMD
+            cls.channel = CmdChannel.CMD
         else:
-            cls.channel == CmdChannel.STATUS
+            cls.channel = CmdChannel.STATUS
 
     @validate_arguments
     def __init__(self, client: RootClient) -> None:
