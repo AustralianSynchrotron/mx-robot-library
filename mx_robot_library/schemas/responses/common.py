@@ -1,7 +1,8 @@
-from typing import Union, Optional
+from typing import Optional, Union
+
+from pydantic import Field, validate_arguments, validator
 from typing_extensions import Self
 
-from pydantic import validator, validate_arguments, Field
 from ...exceptions.base import UnknownPLCError
 from ...exceptions.commands.common import common_errors
 from ..commands.general import RobotGeneralCmds

@@ -24,7 +24,9 @@ class Common(SubClient, channel=CmdChannel.CMD):
         self._client: "Client"
         super().__init__(client=client)
 
-    def send_cmd(self, cmd: RobotGeneralCmds, args: Optional[list] = None) -> CommonResponse:
+    def send_cmd(
+        self, cmd: RobotGeneralCmds, args: Optional[list] = None
+    ) -> CommonResponse:
         """Send a command to the robot and receive echo reply.
 
         Parameters

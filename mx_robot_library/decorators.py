@@ -2,7 +2,7 @@ from collections import OrderedDict
 from functools import wraps
 from inspect import BoundArguments, signature
 from time import sleep, time
-from typing import TYPE_CHECKING, Annotated, Any, Optional, TypeVar, Callable
+from typing import TYPE_CHECKING, Annotated, Any, Optional, TypeVar
 
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
