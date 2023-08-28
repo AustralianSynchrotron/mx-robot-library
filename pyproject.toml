@@ -2,6 +2,7 @@
 name = "mx-robot-library"
 version = "0.1.3"
 description = "MX Robot Library"
+license = "GPL-3.0-or-later"
 authors = ["MX3 Team"]
 
 [[tool.poetry.source]]

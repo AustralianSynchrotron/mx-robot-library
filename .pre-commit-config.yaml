@@ -9,7 +9,7 @@ repos:
       - id: poetry-lock
         language_version: python3.9
   - repo: https://github.com/myint/autoflake
-    rev: v2.1.1
+    rev: v2.2.0
     hooks:
       - id: autoflake
         name: Autoflake
@@ -21,7 +21,7 @@ repos:
           - --remove-duplicate-keys
           - --remove-unused-variables
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.7.0
     hooks:
     - id: black
       name: Black
@@ -51,7 +51,7 @@ repos:
           - --settings=.
         exclude: /__init__\.py$
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+    rev: 6.1.0
     hooks:
     - id: flake8
       name: Flake8

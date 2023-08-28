@@ -1,6 +1,7 @@
 from types import MappingProxyType
-from typing import Any, Union
+from typing import Any, Optional, Union
 
+from pydantic import Field
 from typing_extensions import Self
 
 from mx_robot_library.config import get_settings
@@ -12,6 +13,15 @@ config = get_settings()
 
 class Tool(BaseRobotItem):
     """Tool Model"""
+
+    change_time: Optional[float] = Field(
+        title="Max Change Time",
+        description=(
+            "Maximum time expected to finish the tool change operation when"
+            " the robot speed is set to 100%."
+        ),
+        default=None,
+    )
 
     @classmethod
     def validate(cls: type[Self], value: Any) -> Self:
