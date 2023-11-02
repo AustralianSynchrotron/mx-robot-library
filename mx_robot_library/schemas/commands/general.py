@@ -117,7 +117,7 @@ class RobotGeneralCmds(CmdEnum):
     CLEAR_BCRD = CmdField(
         title="Clear Barcode",
         desciption="Clear the barcode/datamatrix return message.",
-        value="clearbcrd",
+        value="clearbrcd",
     )
     HEATER_ON = CmdField(
         # I think this heater is to prevent condensation accumulating on the robot?
