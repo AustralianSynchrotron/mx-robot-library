@@ -139,9 +139,9 @@ class BaseTrajectoryCmd(BaseModel):
             raise ValueError(
                 f"Ensure sample number is greater than/equal to 1 and less than/equal to {config.ASC_NUM_PINS}."  # noqa: E501,B950
             )
-        if not arg_vals["datamatrix_scan"] in (1, 0):
+        if arg_vals["datamatrix_scan"] not in (1, 0):
             raise ValueError(
-                f"Datamatrix scan \"{arg_vals['datamatrix_scan']}\" not supported, valid options are (1 → On / 0 → Off)."  # noqa: E501,B950
+                f"Datamatrix scan \"{arg_vals['datamatrix_scan']}\" not supported, valid options are (1 → On / 0 → Off)."  # noqa: E501,B950,B907
             )
         n_puck_num = arg_vals["next_puck_num"]
         if n_puck_num and not (n_puck_num >= 0 and n_puck_num <= config.ASC_NUM_PUCKS):
@@ -153,21 +153,21 @@ class BaseTrajectoryCmd(BaseModel):
             raise ValueError(
                 f"Ensure next sample number is greater than/equal to 0 and less than/equal to {config.ASC_NUM_PINS}."  # noqa: E501,B950
             )
-        if not arg_vals["sample_type"] in (1, 0):
+        if arg_vals["sample_type"] not in (1, 0):
             raise ValueError(
-                f"Sample type \"{arg_vals['sample_type']}\" not supported, valid options are (1 → Hampton / 0 → Other)."  # noqa: E501,B950
+                f"Sample type \"{arg_vals['sample_type']}\" not supported, valid options are (1 → Hampton / 0 → Other)."  # noqa: E501,B950,B907
             )
-        if not arg_vals["next_sample_type"] in (1, 0):
+        if arg_vals["next_sample_type"] not in (1, 0):
             raise ValueError(
-                f"Next sample type \"{arg_vals['next_sample_type']}\" not supported, valid options are (1 → Hampton / 0 → Other)."  # noqa: E501,B950
+                f"Next sample type \"{arg_vals['next_sample_type']}\" not supported, valid options are (1 → Hampton / 0 → Other)."  # noqa: E501,B950,B907
             )
-        if not arg_vals["sample_detect_inhibit"] in (1, 0):
+        if arg_vals["sample_detect_inhibit"] not in (1, 0):
             raise ValueError(
-                f"Sample detection inhibition \"{arg_vals['sample_detect_inhibit']}\" not supported, valid options are (1 → Detection disabled / 0 → Detection enabled)."  # noqa: E501,B950
+                f"Sample detection inhibition \"{arg_vals['sample_detect_inhibit']}\" not supported, valid options are (1 → Detection disabled / 0 → Detection enabled)."  # noqa: E501,B950,B907
             )
-        if not arg_vals["next_sample_detect_inhibit"] in (1, 0):
+        if arg_vals["next_sample_detect_inhibit"] not in (1, 0):
             raise ValueError(
-                f"Next sample detection inhibition \"{arg_vals['next_sample_detect_inhibit']}\" not supported, valid options are (1 → Detection disabled / 0 → Detection enabled)."  # noqa: E501,B950
+                f"Next sample detection inhibition \"{arg_vals['next_sample_detect_inhibit']}\" not supported, valid options are (1 → Detection disabled / 0 → Detection enabled)."  # noqa: E501,B950,B907
             )
         return v
 

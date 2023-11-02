@@ -86,7 +86,7 @@ class BaseRobotMaintSetSample(BaseCmdModel):
             )
         if sample_type not in (1, 0):
             raise ValueError(
-                f'Sample type "{sample_type}" not supported, valid options are (1 → Hampton / 0 → Other).'  # noqa: E501,B950
+                f'Sample type "{sample_type}" not supported, valid options are (1 → Hampton / 0 → Other).'  # noqa: E501,B950,B907
             )
         return v
 
@@ -145,7 +145,7 @@ class RobotMaintSetToolSampleCmd(BaseRobotMaintSetSample):
         )
         if jaw_num not in (0, 1):
             raise ValueError(
-                f'Jaw number "{jaw_num}" not supported, valid options are (0 → jaw A / 1 → jaw B).'  # noqa: E501,B950
+                f'Jaw number "{jaw_num}" not supported, valid options are (0 → jaw A / 1 → jaw B).'  # noqa: E501,B950,B907
             )
         return v
 
