@@ -2,14 +2,14 @@ default_language_version:
   python: python3.9
 repos:
   - repo: https://github.com/python-poetry/poetry
-    rev: 1.5.1
+    rev: 1.6.1
     hooks:
       - id: poetry-check
         language_version: python3.9
       - id: poetry-lock
         language_version: python3.9
   - repo: https://github.com/myint/autoflake
-    rev: v2.2.0
+    rev: v2.2.1
     hooks:
       - id: autoflake
         name: Autoflake
@@ -21,24 +21,24 @@ repos:
           - --remove-duplicate-keys
           - --remove-unused-variables
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.10.1
     hooks:
     - id: black
       name: Black
       language_version: python3.9
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-case-conflict
       - id: check-merge-conflict
         # exclude files where underlines are not distinguishable from merge conflicts
-        exclude: ^(README(\.rst|\.md)|docs/.*\.rst)$
+        exclude: /README\.rst$|^docs/.*\.rst$
       - id: check-symlinks
       - id: check-xml
       - id: check-yaml
-        exclude: ^(.drone.yml|.pre\-commit\-config\.yaml)$
+        exclude: ^meta\.yaml$|^\.drone\.yml$
       - id: mixed-line-ending
         args: ["--fix=lf"]
       - id: requirements-txt-fixer
@@ -55,4 +55,4 @@ repos:
     hooks:
     - id: flake8
       name: Flake8
-      additional_dependencies: ["flake8-bugbear==20.1.4"]
+      additional_dependencies: ["flake8-bugbear==23.9.16"]
