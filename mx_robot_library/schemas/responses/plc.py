@@ -1,4 +1,4 @@
-from pydantic import Field, conlist, validate_arguments, validator
+from pydantic import Field, validate_arguments, validator
 from typing_extensions import Self
 
 from ...config import get_settings
@@ -52,13 +52,11 @@ class PLCInputsResponse(BasePLCResponse):
 class PLCOutputsResponse(BasePLCResponse):
     """PLC Outputs Response Model"""
 
-    puck_presense: conlist(
-        item_type=bool,
-        min_items=config.ASC_NUM_PUCKS,
-        max_items=config.ASC_NUM_PUCKS,
-    ) = Field(
+    puck_presense: list[bool] = Field(
         title="Puck Presense",
         description="Puck presense mapping.",
+        min_items=config.ASC_NUM_PUCKS,
+        max_items=config.ASC_NUM_PUCKS,
     )
 
     _compute_error = validator(
