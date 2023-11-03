@@ -5,10 +5,10 @@ from cachetools import TTLCache, cached
 from .client.base import CmdChannel, RootClient, SubClient
 from .decorators import raise_ex
 from .schemas.commands.status import RobotStatusCmd, RobotStatusCmds
+from .schemas.common.sample import Puck
 from .schemas.responses.plc import PLCInputsResponse, PLCOutputsResponse
 from .schemas.responses.sample_data import SampleDataResponse
 from .schemas.responses.state import StateResponse
-from .schemas.common.sample import Puck
 
 
 class Status(SubClient, channel=CmdChannel.STATUS):
@@ -140,7 +140,7 @@ class Status(SubClient, channel=CmdChannel.STATUS):
         return tuple(
             Puck(id=str(_idx), name=_name)
             for _idx, (_populated, _name) in enumerate(
-                zip(
+                zip(  # noqa: B905
                     self.plc_outputs.puck_presense,
                     self.sample_data.puck_matrix,
                 ),
