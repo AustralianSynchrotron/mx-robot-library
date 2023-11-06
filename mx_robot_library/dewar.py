@@ -1,10 +1,12 @@
 import re
-from typing import Mapping, Union, Generator, Any, overload, Optional, TYPE_CHECKING
-from typing_extensions import Self, TypeVar
+from typing import TYPE_CHECKING, Any, Generator, Mapping, Optional, Union, overload
+
 from pydantic import validate_arguments
+from typing_extensions import Self, TypeVar
+
 from .client.base import CmdChannel, SubClient
-from .schemas.common.sample import Puck
 from .config import get_settings
+from .schemas.common.sample import Puck
 
 if TYPE_CHECKING:
     from _collections_abc import dict_items, dict_keys, dict_values
@@ -28,7 +30,7 @@ class Dewar(Mapping, SubClient, channel=CmdChannel.STATUS):
             key = key.id
 
         if isinstance(key, int):
-            _idx = key-1
+            _idx = key - 1
 
             if key < 1:
                 raise KeyError(
@@ -67,7 +69,7 @@ class Dewar(Mapping, SubClient, channel=CmdChannel.STATUS):
             for _idx, _puck_name in enumerate(_status.sample_data.puck_matrix):
                 # Duplicates may exist, use first entry that reports present in dewer
                 if _puck_name == key and _status.plc_outputs.puck_presense[_idx]:
-                    return Puck(id=_idx+1, name=key)
+                    return Puck(id=_idx + 1, name=key)
 
         raise KeyError(
             f"Key {key!r} does not appear to reference any puck currently "
@@ -75,7 +77,7 @@ class Dewar(Mapping, SubClient, channel=CmdChannel.STATUS):
         )
 
     def __iter__(self: Self) -> Generator[int, Any, None]:
-        for _idx in range(1, config.ASC_NUM_PUCKS+1):
+        for _idx in range(1, config.ASC_NUM_PUCKS + 1):
             yield _idx
 
     def __len__(self: Self) -> int:
@@ -113,16 +115,19 @@ class Dewar(Mapping, SubClient, channel=CmdChannel.STATUS):
         Returns
         -------
         tuple[Puck, ...]
-            Tuple of puck opjects currently loaded in the dewar. 
+            Tuple of puck opjects currently loaded in the dewar.
         """
         return tuple(_puck for _puck in self.pucks if _puck is not None)
 
     if TYPE_CHECKING:
-        @overload
-        def get(self: Self, key: Union[Puck, int, str]) -> Union[Puck, None]: ...
 
         @overload
-        def get(self: Self, key: Union[Puck, int, str], default: T) -> Union[Puck, T]: ...
+        def get(self: Self, key: Union[Puck, int, str]) -> Union[Puck, None]:
+            ...
+
+        @overload
+        def get(self: Self, key: Union[Puck, int, str], default: T) -> Union[Puck, T]:
+            ...
 
         def get(
             self: Self,

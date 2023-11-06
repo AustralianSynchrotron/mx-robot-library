@@ -11,6 +11,7 @@ from ..types import HostAddress
 
 if TYPE_CHECKING:
     from pydantic.typing import CallableGenerator
+
     from .client import Client
 
 logger = get_logger()

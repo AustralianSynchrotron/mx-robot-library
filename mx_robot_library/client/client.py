@@ -4,10 +4,10 @@ from typing_extensions import Self
 
 from ..common import Common
 from ..config import get_settings
+from ..dewar import Dewar
 from ..exceptions.client import ClientReadonly
 from ..logger import get_logger
 from ..status import Status
-from ..dewar import Dewar
 from ..trajectory import Trajectory
 from ..types import HostAddress
 from .base import RootClient
