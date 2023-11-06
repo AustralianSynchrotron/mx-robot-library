@@ -27,3 +27,6 @@ robot.common.reset()
 # Increase/Decrease Arm Speed
 robot.common.speed_up()
 robot.common.slow_down()
+
+# Get pucks currently loaded in the dewar
+robot.dewar.loaded_pucks

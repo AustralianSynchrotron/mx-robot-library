@@ -67,9 +67,7 @@ class Puck(BaseSample):
 
     @classmethod
     def validate(cls: Type[Self], value: Any) -> Self:
-        if (isinstance(value, str) or isinstance(value, int)) and cls.is_valid_id(
-            value
-        ):
+        if isinstance(value, (str, int)) and cls.is_valid_id(value):
             value = {"id": value}
         return super().validate(value=value)
 
