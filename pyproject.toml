@@ -5,21 +5,6 @@ description = "MX Robot Library"
 license = "GPL-3.0-or-later"
 authors = ["MX3 Team"]
 
-[[tool.poetry.source]]
-name = "cachedpypi"
-url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
-priority = "default"
-
-[[tool.poetry.source]]
-name = "asci-prod"
-url = "https://pypi.asci.synchrotron.org.au/asci/prod/+simple"
-priority = "primary"
-
-[[tool.poetry.source]]
-name = "asci-dev"
-url = "https://pypi.asci.synchrotron.org.au/asci/dev/+simple"
-priority = "supplemental"
-
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
 pydantic = ">=1.10.13,<2.0.0"
