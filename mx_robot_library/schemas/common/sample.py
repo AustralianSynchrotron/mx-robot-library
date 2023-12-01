@@ -24,6 +24,11 @@ class BaseSample(BaseModel):
     def __int__(self: Self) -> int:
         return self.id
 
+    def __eq__(self: Self, __value: object) -> bool:
+        if isinstance(__value, self.__class__):
+            return self.id == __value.id
+        return super().__eq__(__value)
+
     @staticmethod
     @validate_arguments
     def is_valid_id(id: Union[int, str]) -> bool:
@@ -106,6 +111,11 @@ class Pin(BaseSample):
 
     def __str__(self: Self) -> str:
         return self.name or f"{str(self.puck)}[{self.id}]"
+
+    def __eq__(self: Self, __value: object) -> bool:
+        if isinstance(__value, self.__class__):
+            return self.puck.id == __value.puck.id and self.id == __value.id
+        return super().__eq__(__value)
 
     @classmethod
     def validate(cls: Type[Self], value: Any) -> Self:
