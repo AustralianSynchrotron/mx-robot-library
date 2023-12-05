@@ -12,6 +12,8 @@ from ..types import HostAddress
 if TYPE_CHECKING:
     from pydantic.typing import CallableGenerator
 
+    from .client import Client
+
 logger = get_logger()
 config = get_settings()
 
@@ -145,7 +147,7 @@ class SubClient(BaseClient):
         client : RootClient
             Root client.
         """
-        self._client = client
+        self._client: "Client" = client
 
     @property
     def host(self) -> str:

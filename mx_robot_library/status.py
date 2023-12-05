@@ -5,6 +5,7 @@ from cachetools import TTLCache, cached
 from .client.base import CmdChannel, RootClient, SubClient
 from .decorators import raise_ex
 from .schemas.commands.status import RobotStatusCmd, RobotStatusCmds
+from .schemas.common.sample import Puck
 from .schemas.responses.plc import PLCInputsResponse, PLCOutputsResponse
 from .schemas.responses.sample_data import SampleDataResponse
 from .schemas.responses.state import StateResponse
@@ -121,11 +122,29 @@ class Status(SubClient, channel=CmdChannel.STATUS):
             obj=self._raw_sample_data,
         )
 
-    def get_loaded_pucks(self, *args, **kwargs):
-        """ """
+    def get_loaded_pucks(self, *args, **kwargs) -> tuple[Puck, ...]:
+        """Get pucks currently loaded in the dewar.
 
-        # Read populated puck positions from PLC outputs 56(1)->84(29)
-        # _puck_positions = self.plc_outputs[56:85]
-        # self.sample_data
+        Pucks are detected using presence information pulled from the robot PLC.
 
-        raise NotImplementedError
+        If datamatrix (barcode) information is present in the sample data,
+        this will be passed to the output puck instance `name` property,
+        otherwise the puck name will be generated based on the pucks positon
+        in the dewar, e.g. from the `id` attribute.
+
+        Returns
+        -------
+        tuple[Puck, ...]
+            Currently loaded pucks.
+        """
+        return tuple(
+            Puck(id=str(_idx), name=_name)
+            for _idx, (_populated, _name) in enumerate(
+                zip(  # noqa: B905
+                    self.plc_outputs.puck_presense,
+                    self.sample_data.puck_matrix,
+                ),
+                start=1,
+            )
+            if _populated
+        )

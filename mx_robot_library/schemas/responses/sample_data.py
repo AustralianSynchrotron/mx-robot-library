@@ -1,4 +1,4 @@
-from pydantic import Field, conlist, validate_arguments, validator
+from pydantic import Field, validate_arguments, validator
 from typing_extensions import Self
 
 from ...config import get_settings
@@ -11,13 +11,11 @@ config = get_settings()
 class SampleDataResponse(BaseStatusResponse):
     """Sample Data Response"""
 
-    puck_matrix: conlist(
-        item_type=str,
-        min_items=config.ASC_NUM_PUCKS,
-        max_items=config.ASC_NUM_PUCKS,
-    ) = Field(
+    puck_matrix: list[str] = Field(
         title="Puck Presense",
         description="Puck presense mapping.",
+        min_items=config.ASC_NUM_PUCKS,
+        max_items=config.ASC_NUM_PUCKS,
     )
 
     _compute_error = validator(

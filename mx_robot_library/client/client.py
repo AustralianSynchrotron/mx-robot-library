@@ -4,12 +4,12 @@ from typing_extensions import Self
 
 from ..common import Common
 from ..config import get_settings
+from ..dewar import Dewar
 from ..exceptions.client import ClientReadonly
 from ..logger import get_logger
 from ..status import Status
 from ..trajectory import Trajectory
 from ..types import HostAddress
-from ..utils import Utils
 from .base import RootClient
 
 logger = get_logger()
@@ -45,9 +45,9 @@ class Client(RootClient):
             readonly=readonly,
         )
         self._status: Union[Status, None] = None
+        self._dewar: Union[Dewar, None] = None
         self._trajectory: Union[Trajectory, None] = None
         self._common: Union[Common, None] = None
-        self._utils: Union[Utils, None] = None
 
     @classmethod
     def validate(cls, value: Any) -> Self:
@@ -83,6 +83,19 @@ class Client(RootClient):
         return self._status
 
     @property
+    def dewar(self: Self) -> Dewar:
+        """Sub-client to handle calls related to the robot dewar.
+
+        Returns
+        -------
+        Dewar
+            Instance of the dewar sub-client.
+        """
+        if not self._dewar:
+            self._dewar = Dewar(client=self)
+        return self._dewar
+
+    @property
     def trajectory(self) -> Trajectory:
         """Sub-client to handle calls to robot trajectory commands.
 
@@ -112,17 +125,3 @@ class Client(RootClient):
         if not self._common:
             self._common = Common(client=self)
         return self._common
-
-    @property
-    def utils(self) -> Utils:
-        """Common utilities.
-
-        Returns
-        -------
-        Utils
-            Instance of utils.
-        """
-
-        if not self._utils:
-            self._utils = Utils(client=self)
-        return self._utils

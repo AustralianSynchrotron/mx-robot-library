@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Type, Union
+from typing import Any, Optional, Type, Union
 
 from pydantic import BaseModel, Field, validate_arguments
 from typing_extensions import Self
@@ -23,6 +23,11 @@ class BaseSample(BaseModel):
 
     def __int__(self: Self) -> int:
         return self.id
+
+    def __eq__(self: Self, __value: object) -> bool:
+        if isinstance(__value, self.__class__):
+            return self.id == __value.id
+        return super().__eq__(__value)
 
     @staticmethod
     @validate_arguments
@@ -60,13 +65,14 @@ class Puck(BaseSample):
         le=config.ASC_NUM_PUCKS,
         ge=1,
     )
-    # datamatrix: ? TBD
+    name: Optional[str] = Field(title="Name", default=None)
+
+    def __str__(self: Self) -> str:
+        return self.name or f"puck_{self.id}"
 
     @classmethod
     def validate(cls: Type[Self], value: Any) -> Self:
-        if (isinstance(value, str) or isinstance(value, int)) and cls.is_valid_id(
-            value
-        ):
+        if isinstance(value, (str, int)) and cls.is_valid_id(value):
             value = {"id": value}
         return super().validate(value=value)
 
@@ -97,15 +103,23 @@ class Pin(BaseSample):
         title="Type",
         default=PinType.OTHER,
     )
-    # datamatrix: ? TBD
+    name: Optional[str] = Field(title="Name", default=None)
 
     def __iter__(self):
         for _id in (self.puck.id, self.id):
             yield _id
 
+    def __str__(self: Self) -> str:
+        return self.name or f"{str(self.puck)}[{self.id}]"
+
+    def __eq__(self: Self, __value: object) -> bool:
+        if isinstance(__value, self.__class__):
+            return self.puck.id == __value.puck.id and self.id == __value.id
+        return super().__eq__(__value)
+
     @classmethod
     def validate(cls: Type[Self], value: Any) -> Self:
-        if isinstance(value, tuple) or isinstance(value, list) and len(value) >= 2:
+        if isinstance(value, (tuple, list)) and len(value) >= 2:
             _puck_id, _id = value[:2]
             if cls.is_valid_id(_puck_id) or cls.is_valid_id(_id):
                 value = {"id": _id, "puck": {"id": _puck_id}}
