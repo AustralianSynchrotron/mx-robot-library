@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2023-12-06
+
 ### Added
 
 - Added Dewar sub-client to robot client.
@@ -45,4 +47,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pin now accepts a tuple passed as `(<Puck ID>, <Pin ID>)` via the Pydantic validate method.
 - Improved parsing robot state response, positions now defined in model field definition, with mapped values passed directly to the Pydantic validation method.
 
-[unreleased]: https://github.com/AustralianSynchrotron/mx-robot-library/compare/0.1.3...HEAD
+[unreleased]: https://github.com/AustralianSynchrotron/mx-robot-library/compare/0.1.4...HEAD
+[0.1.4]: https://github.com/olivierlacan/keep-a-changelog/compare/0.1.3...0.1.4
