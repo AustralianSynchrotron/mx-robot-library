@@ -9,7 +9,7 @@ from .trajectory import trajectory_errors
 __all__ = ("command_errors",)
 
 command_errors: TypeAlias = Annotated[
-        Union[
+    Union[
         common_errors,
         cv_errors,
         pla_errors,

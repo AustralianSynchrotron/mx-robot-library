@@ -1,6 +1,7 @@
 from typing import Annotated
-from typing_extensions import Literal
+
 from pydantic import Field
+from typing_extensions import Literal
 
 from .base import BaseCmdModel, CmdEnum, CmdField
 
@@ -71,7 +72,9 @@ class RobotCVLightModeCmd(BaseCmdModel):
         1 = External lighting is forced to OFF by the user)
     """
 
-    cmd: Literal["cv_forcelightoff"] = Field(title="Command", default="cv_forcelightoff")
+    cmd: Literal["cv_forcelightoff"] = Field(
+        title="Command", default="cv_forcelightoff"
+    )
     args: list[Annotated[int, Field(ge=0, le=1)]] = Field(
         title="Arguments",
         min_length=1,

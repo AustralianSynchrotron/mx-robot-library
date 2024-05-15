@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Optional, Union
 
-from pydantic import BaseModel, Field, model_validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class CmdField(BaseModel):
@@ -39,11 +39,12 @@ class BaseCmdModel(BaseModel):
             )
         return res
 
+    @classmethod
     @model_validator(mode="before")
     def compute_cmd_fmt(cls, value: Any) -> Any:
         if isinstance(value, dict):
             if value.get("cmd") and value.get("args"):
-                _args = ','.join([str(arg) for arg in value['args']])
+                _args = ",".join([str(arg) for arg in value["args"]])
                 value["cmd_fmt"] = f"{value['cmd']}({_args})\r"
             elif value.get("cmd"):
                 value["cmd_fmt"] = f"{value['cmd']}\r"

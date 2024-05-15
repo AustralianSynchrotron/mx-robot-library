@@ -27,6 +27,11 @@ files = [
     {file = "cachetools-5.3.3.tar.gz", hash = "sha256:ba29e2dfa0b8b556606f097407ed1aa62080ee108ab0dc5ec9d6a723a007d105"},
 ]
 
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
+
 [[package]]
 name = "cfgv"
 version = "3.4.0"
@@ -38,6 +43,11 @@ files = [
     {file = "cfgv-3.4.0.tar.gz", hash = "sha256:e52591d4c5f5dead8e0f673fb16db7949d2cfb3f7da4582893288f0ded8fe560"},
 ]
 
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
+
 [[package]]
 name = "distlib"
 version = "0.3.8"
@@ -48,6 +58,11 @@ files = [
     {file = "distlib-0.3.8-py2.py3-none-any.whl", hash = "sha256:034db59a0b96f8ca18035f36290806a9a6e6bd9d1ff91e45a7f172eb17e51784"},
     {file = "distlib-0.3.8.tar.gz", hash = "sha256:1530ea13e350031b6312d8580ddb6b27a104275a31106523b8f123787f494f64"},
 ]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
 
 [[package]]
 name = "filelock"
@@ -65,6 +80,11 @@ docs = ["furo (>=2023.9.10)", "sphinx (>=7.2.6)", "sphinx-autodoc-typehints (>=1
 testing = ["covdefaults (>=2.3)", "coverage (>=7.3.2)", "diff-cover (>=8.0.1)", "pytest (>=7.4.3)", "pytest-cov (>=4.1)", "pytest-mock (>=3.12)", "pytest-timeout (>=2.2)"]
 typing = ["typing-extensions (>=4.8)"]
 
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
+
 [[package]]
 name = "identify"
 version = "2.5.36"
@@ -78,6 +98,11 @@ files = [
 
 [package.extras]
 license = ["ukkonen"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
 
 [[package]]
 name = "nodeenv"
@@ -93,21 +118,31 @@ files = [
 [package.dependencies]
 setuptools = "*"
 
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
+
 [[package]]
 name = "platformdirs"
-version = "4.2.1"
+version = "4.2.2"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "platformdirs-4.2.1-py3-none-any.whl", hash = "sha256:17d5a1161b3fd67b390023cb2d3b026bbd40abde6fdb052dfbd3a29c3ba22ee1"},
-    {file = "platformdirs-4.2.1.tar.gz", hash = "sha256:031cd18d4ec63ec53e82dceaac0417d218a6863f7745dfcc9efe7793b7039bdf"},
+    {file = "platformdirs-4.2.2-py3-none-any.whl", hash = "sha256:2d7a1657e36a80ea911db832a8a6ece5ee53d8de21edd5cc5879af6530b1bfee"},
+    {file = "platformdirs-4.2.2.tar.gz", hash = "sha256:38b7b51f512eed9e84a22788b4bce1de17c0adb134d6becb09836e37d8654cd3"},
 ]
 
 [package.extras]
 docs = ["furo (>=2023.9.10)", "proselint (>=0.13)", "sphinx (>=7.2.6)", "sphinx-autodoc-typehints (>=1.25.2)"]
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4.3)", "pytest-cov (>=4.1)", "pytest-mock (>=3.12)"]
 type = ["mypy (>=1.8)"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
 
 [[package]]
 name = "pre-commit"
@@ -127,6 +162,11 @@ nodeenv = ">=0.11.1"
 pyyaml = ">=5.1"
 virtualenv = ">=20.10.0"
 
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
+
 [[package]]
 name = "pydantic"
 version = "2.7.1"
@@ -145,6 +185,11 @@ typing-extensions = ">=4.6.1"
 
 [package.extras]
 email = ["email-validator (>=2.0.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
 
 [[package]]
 name = "pydantic-core"
@@ -261,6 +306,11 @@ python-dotenv = ">=0.21.0"
 toml = ["tomli (>=2.0.1)"]
 yaml = ["pyyaml (>=6.0.1)"]
 
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
+
 [[package]]
 name = "python-dotenv"
 version = "1.0.1"
@@ -275,42 +325,10 @@ files = [
 [package.extras]
 cli = ["click (>=5.0)"]
 
-[[package]]
-name = "pytest-html"
-version = "4.1.1"
-description = "pytest plugin for generating HTML reports"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "pytest_html-4.1.1-py3-none-any.whl", hash = "sha256:c8152cea03bd4e9bee6d525573b67bbc6622967b72b9628dda0ea3e2a0b5dd71"},
-    {file = "pytest_html-4.1.1.tar.gz", hash = "sha256:70a01e8ae5800f4a074b56a4cb1025c8f4f9b038bba5fe31e3c98eb996686f07"},
-]
-
-[package.dependencies]
-jinja2 = ">=3.0.0"
-pytest = ">=7.0.0"
-pytest-metadata = ">=2.0.0"
-
-[package.extras]
-docs = ["pip-tools (>=6.13.0)"]
-test = ["assertpy (>=1.1)", "beautifulsoup4 (>=4.11.1)", "black (>=22.1.0)", "flake8 (>=4.0.1)", "pre-commit (>=2.17.0)", "pytest-mock (>=3.7.0)", "pytest-rerunfailures (>=11.1.2)", "pytest-xdist (>=2.4.0)", "selenium (>=4.3.0)", "tox (>=3.24.5)"]
-
-[[package]]
-name = "pytest-metadata"
-version = "3.0.0"
-description = "pytest plugin for test session metadata"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pytest_metadata-3.0.0-py3-none-any.whl", hash = "sha256:a17b1e40080401dc23177599208c52228df463db191c1a573ccdffacd885e190"},
-    {file = "pytest_metadata-3.0.0.tar.gz", hash = "sha256:769a9c65d2884bd583bc626b0ace77ad15dbe02dd91a9106d47fd46d9c2569ca"},
-]
-
-[package.dependencies]
-pytest = ">=7.0.0"
-
-[package.extras]
-test = ["black (>=22.1.0)", "flake8 (>=4.0.1)", "pre-commit (>=2.17.0)", "tox (>=3.24.5)"]
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
 
 [[package]]
 name = "pyyaml"
@@ -372,6 +390,11 @@ files = [
     {file = "PyYAML-6.0.1.tar.gz", hash = "sha256:bfdf460b1736c775f2ba9f6a92bca30bc2095067b8a9d77876d1fad6cc3b4a43"},
 ]
 
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
+
 [[package]]
 name = "setuptools"
 version = "69.5.1"
@@ -387,6 +410,11 @@ files = [
 docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
 testing = ["build[virtualenv]", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.9)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mypy (==1.9)", "packaging (>=23.2)", "pip (>=19.1)", "pytest (>=6,!=8.1.1)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy", "pytest-perf", "pytest-ruff (>=0.2.1)", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
 testing-integration = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "packaging (>=23.2)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
+reference = "cachedpypi"
 
 [[package]]
 name = "typing-extensions"

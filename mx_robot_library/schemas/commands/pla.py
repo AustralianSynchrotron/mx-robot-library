@@ -1,6 +1,7 @@
 from typing import Annotated
+
+from pydantic import Field
 from typing_extensions import Literal
-from pydantic import Field, confloat, conint, conlist
 
 from mx_robot_library.config import get_settings
 
@@ -135,7 +136,9 @@ class RobotPLAStartScanningCmd(BaseCmdModel):
         List containing two integers to specify the start and stop pucks.
     """
 
-    cmd: Literal["pla_startscanning"] = Field(title="Command", default="pla_startscanning")
+    cmd: Literal["pla_startscanning"] = Field(
+        title="Command", default="pla_startscanning"
+    )
     args: list[Annotated[int, Field(le=config.ASC_NUM_PUCKS, ge=1)]] = Field(
         title="Arguments",
         min_length=2,
@@ -155,7 +158,9 @@ class RobotPLACleanPuckMapCmd(BaseCmdModel):
         List containing two integers to specify the start and stop pucks.
     """
 
-    cmd: Literal["pla_cleanpuckmap"] = Field(title="Command", default="pla_cleanpuckmap")
+    cmd: Literal["pla_cleanpuckmap"] = Field(
+        title="Command", default="pla_cleanpuckmap"
+    )
     args: list[Annotated[int, Field(le=config.ASC_NUM_PUCKS, ge=1)]] = Field(
         title="Arguments",
         min_length=2,

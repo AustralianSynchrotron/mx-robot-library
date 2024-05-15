@@ -1,23 +1,20 @@
 from dataclasses import dataclass
 from ipaddress import IPv4Address
-from typing import Any, TYPE_CHECKING, Union
-from typing_extensions import Self
-from pydantic import (
-    GetCoreSchemaHandler,
-    GetJsonSchemaHandler,
-    ValidationError,
-)
+from typing import TYPE_CHECKING, Any, Union
+
+from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler, ValidationError
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema, PydanticCustomError, Url
 from pydantic_core.core_schema import (
-    chain_schema,
-    union_schema,
-    str_schema,
-    url_schema,
-    no_info_wrap_validator_function,
     ValidatorFunctionWrapHandler,
     any_schema,
+    chain_schema,
+    no_info_wrap_validator_function,
+    str_schema,
+    union_schema,
+    url_schema,
 )
+from typing_extensions import Self
 
 __all__ = ("HostAddress",)
 
@@ -25,11 +22,14 @@ __all__ = ("HostAddress",)
 if TYPE_CHECKING:
     HostAddress = Union[Url, IPv4Address, str]
 else:
+
     @dataclass()
     class HostAddress:
 
         @classmethod
-        def _validate(cls: type[Self], value: str, handler: ValidatorFunctionWrapHandler) -> str:
+        def _validate(
+            cls: type[Self], value: str, handler: ValidatorFunctionWrapHandler
+        ) -> str:
             try:
                 handler(value)
             except ValidationError:
@@ -39,7 +39,7 @@ else:
                 except ValidationError as _ex:
                     raise PydanticCustomError(
                         "host_address_invalid",
-                        "Host address passed is in an invalid format."
+                        "Host address passed is in an invalid format.",
                     ) from _ex
             raise PydanticCustomError(
                 "host_address_url",
@@ -74,13 +74,17 @@ else:
                                     str_schema(),
                                 ],
                             ),
-                            chain_schema(steps=[
-                                str_schema(strip_whitespace=True),
-                                no_info_wrap_validator_function(
-                                    function=cls._validate,
-                                    schema=url_schema(host_required=True, default_path="/"),
-                                )
-                            ])
+                            chain_schema(
+                                steps=[
+                                    str_schema(strip_whitespace=True),
+                                    no_info_wrap_validator_function(
+                                        function=cls._validate,
+                                        schema=url_schema(
+                                            host_required=True, default_path="/"
+                                        ),
+                                    ),
+                                ]
+                            ),
                         ],
                         mode="left_to_right",
                     ),

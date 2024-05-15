@@ -1,9 +1,8 @@
 from enum import Enum
 from socket import AF_INET, SOCK_STREAM, socket
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
-from pydantic import validate_call
-from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
+from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler, validate_call
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema
 from pydantic_core.core_schema import is_instance_schema
@@ -12,6 +11,9 @@ from typing_extensions import Self
 from ..config import get_settings
 from ..logger import get_logger
 from ..types import HostAddress
+
+if TYPE_CHECKING:
+    from .client import Client
 
 logger = get_logger()
 config = get_settings()

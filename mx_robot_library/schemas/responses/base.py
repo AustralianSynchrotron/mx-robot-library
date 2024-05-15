@@ -1,7 +1,7 @@
 import re
 from typing import Annotated, Any, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, validate_call, ValidationInfo
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, validate_call
 from typing_extensions import Self
 
 from ...exceptions.base import PLCError

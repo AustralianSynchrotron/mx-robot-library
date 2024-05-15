@@ -122,12 +122,14 @@ class Dewar(Mapping, SubClient, channel=CmdChannel.STATUS):
     if TYPE_CHECKING:
 
         @overload
-        def get(self: Self, key: Union[Puck, int, str]) -> Union[Puck, None]:
-            ...
+        def get(  # noqa: E704
+            self: Self, key: Union[Puck, int, str]
+        ) -> Union[Puck, None]: ...
 
         @overload
-        def get(self: Self, key: Union[Puck, int, str], default: T) -> Union[Puck, T]:
-            ...
+        def get(  # noqa: E704
+            self: Self, key: Union[Puck, int, str], default: T
+        ) -> Union[Puck, T]: ...
 
         def get(
             self: Self,

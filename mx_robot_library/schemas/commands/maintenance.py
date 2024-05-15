@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import Annotated, Any, Dict
-from typing_extensions import Literal
+from typing import Annotated
 
-from pydantic import Field, conint, conlist, validator, field_validator
+from pydantic import Field, field_validator
+from typing_extensions import Literal
 
 from mx_robot_library.config import get_settings
 
@@ -197,7 +197,9 @@ class RobotMaintSetAutoCloseLidCmd(BaseCmdModel):
         List containing a single integer to set auto close lid timer.
     """
 
-    cmd: Literal["setautocloselidtimer"] = Field(title="Command", default="setautocloselidtimer")
+    cmd: Literal["setautocloselidtimer"] = Field(
+        title="Command", default="setautocloselidtimer"
+    )
     args: list[Annotated[int, Field(ge=1, le=34560)]] = Field(
         title="Arguments",
         min_length=1,
@@ -239,7 +241,9 @@ class RobotMaintSetCoolTimeCmd(BaseCmdModel):
         List containing a single integer to set gripper cooling time.
     """
 
-    cmd: Literal["setgrippercoolingtimer"] = Field(title="Command", default="setgrippercoolingtimer")
+    cmd: Literal["setgrippercoolingtimer"] = Field(
+        title="Command", default="setgrippercoolingtimer"
+    )
     args: list[Annotated[int, Field(ge=0, le=60)]] = Field(
         title="Arguments",
         min_length=1,
@@ -302,7 +306,9 @@ class RobotMaintGotoCamPosCmd(BaseCmdModel):
     Move the camera to the position given in argument.
     """
 
-    cmd: Literal["gotocameraposition"] = Field(title="Command", default="gotocameraposition")
+    cmd: Literal["gotocameraposition"] = Field(
+        title="Command", default="gotocameraposition"
+    )
     args: list[CameraPositions] = Field(
         title="Arguments",
         min_length=1,

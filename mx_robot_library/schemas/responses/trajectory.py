@@ -1,6 +1,6 @@
 from typing import Annotated, Optional, Union
 
-from pydantic import Field, validate_call, field_validator
+from pydantic import Field, field_validator, validate_call
 from typing_extensions import Self
 
 from ...exceptions.base import UnknownPLCError
@@ -13,7 +13,12 @@ from .base import BaseResponse, compute_error
 class TrajectoryResponse(BaseResponse):
     """Trajectory Response Model"""
 
-    error: Optional[Annotated[Union[trajectory_errors, common_errors, UnknownPLCError], Field(union_mode="left_to_right")]] = Field(
+    error: Optional[
+        Annotated[
+            Union[trajectory_errors, common_errors, UnknownPLCError],
+            Field(union_mode="left_to_right"),
+        ]
+    ] = Field(
         title="Raised Exception",
         description="Error returned by the PLC if raised.",
         validate_default=True,

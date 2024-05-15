@@ -1,7 +1,7 @@
 from types import MappingProxyType
 from typing import Any, Union
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Self
 
 

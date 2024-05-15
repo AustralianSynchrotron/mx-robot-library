@@ -1,19 +1,7 @@
 from types import MappingProxyType
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
-from pydantic import (
-    Field,
-    validate_call,
-    GetCoreSchemaHandler,
-    GetJsonSchemaHandler,
-    field_validator,
-)
-from pydantic.json_schema import JsonSchemaValue
-from pydantic_core import CoreSchema
-from pydantic_core.core_schema import (
-    no_info_after_validator_function,
-    plain_serializer_function_ser_schema,
-)
+from pydantic import Field, field_validator, validate_call
 from typing_extensions import Self
 
 from ..commands.status import RobotStatusCmds

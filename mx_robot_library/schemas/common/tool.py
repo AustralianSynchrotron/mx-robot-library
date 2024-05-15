@@ -1,11 +1,12 @@
 from types import MappingProxyType
 from typing import Any, Optional, Union
-from typing_extensions import Self
-from pydantic import Field
-from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
+
+from pydantic import Field, GetCoreSchemaHandler, GetJsonSchemaHandler
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema
 from pydantic_core.core_schema import no_info_before_validator_function
+from typing_extensions import Self
+
 from mx_robot_library.config import get_settings
 
 from .base import BaseRobotItem, BaseRobotMeta

@@ -1,9 +1,10 @@
 from typing import Any, Union
-from typing_extensions import Self
+
 from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema
 from pydantic_core.core_schema import no_info_before_validator_function
+from typing_extensions import Self
 
 from ..common import Common
 from ..config import get_settings

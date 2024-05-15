@@ -1,10 +1,18 @@
 from types import MappingProxyType
 from typing import Any, Union
-from typing_extensions import Self
+
 from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema
-from pydantic_core.core_schema import union_schema, str_schema, int_schema, no_info_after_validator_function, chain_schema
+from pydantic_core.core_schema import (
+    chain_schema,
+    int_schema,
+    no_info_after_validator_function,
+    str_schema,
+    union_schema,
+)
+from typing_extensions import Self
+
 from .base import BaseRobotItem, BaseRobotMeta
 
 
@@ -39,7 +47,7 @@ class Position(BaseRobotItem):
                         ),
                         _core_schema,
                     ],
-                )
+                ),
             ],
             mode="left_to_right",
         )

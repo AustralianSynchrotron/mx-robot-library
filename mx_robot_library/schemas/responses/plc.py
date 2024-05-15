@@ -1,6 +1,4 @@
-from typing import Annotated
-from typing_extensions import Self
-from pydantic import Field, conlist, validate_call, field_validator
+from pydantic import Field, field_validator, validate_call
 
 from ...config import get_settings
 from ..commands.status import RobotStatusCmds

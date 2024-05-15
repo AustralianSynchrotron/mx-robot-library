@@ -1,11 +1,18 @@
 from enum import Enum
-from typing import Annotated, Any, Type, Union
-from typing_extensions import Self
-from pydantic import BaseModel, Field, validate_call
-from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
+from typing import Annotated, Any, Optional, Type, Union
+
+from pydantic import (
+    BaseModel,
+    Field,
+    GetCoreSchemaHandler,
+    GetJsonSchemaHandler,
+    validate_call,
+)
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema
 from pydantic_core.core_schema import no_info_before_validator_function
+from typing_extensions import Self
+
 from mx_robot_library.config import get_settings
 
 config = get_settings()

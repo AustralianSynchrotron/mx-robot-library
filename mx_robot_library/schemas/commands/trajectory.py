@@ -1,7 +1,6 @@
 from collections import OrderedDict
 from enum import Enum
 from typing import Annotated, Any, Dict, Optional
-from typing_extensions import Literal
 
 from pydantic import (
     BaseModel,
@@ -11,6 +10,7 @@ from pydantic import (
     validate_call,
     validator,
 )
+from typing_extensions import Literal
 
 from mx_robot_library.config import get_settings
 
