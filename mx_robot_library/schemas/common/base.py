@@ -1,7 +1,7 @@
 from types import MappingProxyType
 from typing import Any, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing_extensions import Self
 
 
@@ -12,8 +12,7 @@ class BaseRobotItem(BaseModel):
     name: str = Field(title="Name")
     description: str = Field(title="Description")
 
-    class Config:
-        allow_mutation = False
+    model_config = ConfigDict(frozen=True)
 
     def __int__(self: Self) -> int:
         return self.id

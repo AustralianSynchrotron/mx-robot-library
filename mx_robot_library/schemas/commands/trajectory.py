@@ -1,14 +1,14 @@
 from collections import OrderedDict
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Annotated, Any, Dict, Optional
+from typing_extensions import Literal
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
-    conint,
-    conlist,
     root_validator,
-    validate_arguments,
+    validate_call,
     validator,
 )
 
@@ -64,28 +64,19 @@ class TrajectorySubCmds(str, Enum):
 class BaseTrajectoryCmd(BaseModel):
     """Abstract Trajectory Command Model"""
 
-    cmd: str = Field(title="Command", default="traj", const=True)
+    cmd: Literal["traj"] = Field(title="Command", default="traj")
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
     )
-    full_args: Optional[
-        conlist(
-            item_type=int,
-            min_items=1,
-        )
-    ] = Field(title="Full Arguments")
-    args: conlist(
-        item_type=int,
-        min_items=1,
-    ) = Field(title="Sub Arguments")
+    full_args: Optional[list[int]] = Field(title="Full Arguments", min_length=1)
+    args: list[int] = Field(title="Sub Arguments", min_length=1)
     cmd_fmt: Optional[str] = Field(
         title="Formatted Command",
         description="Formatted command to be passed via socket connection.",
-        regex=r"^[^\(\)\s]*\r|^\S*\(.*\)\r",
+        pattern=r"^[^\(\)\s]*\r|^\S*\(.*\)\r",
     )
 
-    class Config:
-        validate_assignment: bool = True
+    model_config = ConfigDict(validate_assignment=True)
 
     def __str__(self) -> str:
         return str(self.sub_cmd)
@@ -98,7 +89,7 @@ class BaseTrajectoryCmd(BaseModel):
         if name in ["sub_cmd", "args", "full_args"]:
             self.cmd_fmt = self.__class__.compute_cmd_fmt(
                 v=self.cmd_fmt,
-                values=self.dict(),
+                values=self.model_dump(warnings=False),
             )
         return res
 
@@ -172,7 +163,7 @@ class BaseTrajectoryCmd(BaseModel):
         return v
 
     @staticmethod
-    @validate_arguments
+    @validate_call
     def get_named_args(args: list[int]) -> OrderedDict:
         """Generate an named dict of arguments from passed list.
 
@@ -207,7 +198,7 @@ class BaseTrajectoryCmd(BaseModel):
         return arg_vals
 
     @staticmethod
-    @validate_arguments
+    @validate_call
     def trim_args(args: list[int]) -> list[int]:
         """Chop any trailing "0" values off the end of the returned list,
         as they will default automatically.
@@ -238,14 +229,11 @@ class RobotTrajMoveHomeDirectCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.MOVE_HOME_DIRECT,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -261,14 +249,11 @@ class RobotTrajMoveHomeSafeCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.MOVE_HOME_SAFE,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -301,14 +286,11 @@ class RobotTrajMountSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.MOUNT_AND_PREPICK_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=13,
-        max_items=13,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=13,
+        max_length=13,
     )
 
 
@@ -332,14 +314,11 @@ class RobotTrajUnmountSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.UNMOUNT_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=5,
-        max_items=5,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=5,
+        max_length=5,
     )
 
     @root_validator(pre=True)
@@ -386,14 +365,11 @@ class RobotTrajUnmountAndMountSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.UNMOUNT_MOUNT_AND_PREPICK_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=13,
-        max_items=13,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=13,
+        max_length=13,
     )
 
 
@@ -419,14 +395,11 @@ class RobotTrajPrepickSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.PREPICK_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=6,
-        max_items=6,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=6,
+        max_length=6,
     )
 
     @root_validator(pre=True)
@@ -461,14 +434,11 @@ class RobotTrajReadSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.READ_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=5,
-        max_items=5,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=5,
+        max_length=5,
     )
 
     @root_validator(pre=True)
@@ -498,14 +468,11 @@ class RobotTrajReturnSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.RETURN_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -528,14 +495,11 @@ class RobotTrajPickAndMoveSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.PICK_AND_MOVE_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=5,
-        max_items=5,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=5,
+        max_length=5,
     )
 
     @root_validator(pre=True)
@@ -580,14 +544,11 @@ class RobotTrajHotPuckMountSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.HOTPUCK_MOUNT_AND_PREPICK_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=13,
-        max_items=13,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=13,
+        max_length=13,
     )
 
 
@@ -611,14 +572,11 @@ class RobotTrajHotPuckUnmountSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.HOTPUCK_UNMOUNT_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=5,
-        max_items=5,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=5,
+        max_length=5,
     )
 
     @root_validator(pre=True)
@@ -665,14 +623,11 @@ class RobotTrajHotPuckUnmountAndMountSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.HOTPUCK_UNMOUNT_MOUNT_AND_PREPICK_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=int,
-        min_items=13,
-        max_items=13,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=13,
+        max_length=13,
     )
 
 
@@ -690,14 +645,11 @@ class RobotTrajHotPuckReturnSampleCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.HOTPUCK_RETURN_SAMPLE,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -713,14 +665,11 @@ class RobotTrajMountPlateCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.MOUNT_PLATE,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=2,
-        max_items=2,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=2,
+        max_length=2,
     )
 
 
@@ -736,14 +685,11 @@ class RobotTrajUnmountPlateCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.UNMOUNT_PLATE,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -760,14 +706,11 @@ class RobotTrajPickAndMovePlateCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.PICK_AND_MOVE_PLATE,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=2,
-        max_items=2,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=2,
+        max_length=2,
     )
 
 
@@ -783,14 +726,11 @@ class RobotTrajTeachGonioCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_GONIOMETER,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -807,14 +747,11 @@ class RobotTrajTeachPuckCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_PUCK,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=2,
-        max_items=2,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=2,
+        max_length=2,
     )
 
 
@@ -831,14 +768,11 @@ class RobotTrajTeachDewarCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_DEWAR,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=2,
-        max_items=2,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=2,
+        max_length=2,
     )
 
 
@@ -854,14 +788,11 @@ class RobotTrajTeachPlateHolderCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_PLATE_HOLDER,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -878,14 +809,11 @@ class RobotTrajTeachHotPuckCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_HOTPUCK,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=2,
-        max_items=2,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=2,
+        max_length=2,
     )
 
 
@@ -902,14 +830,11 @@ class RobotTrajSoakToolCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.SOAK_TOOL,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -927,14 +852,11 @@ class RobotTrajDryToolCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.DRY_TOOL,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -951,14 +873,11 @@ class RobotTrajChangeToolCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.CHANGE_TOOL,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -974,12 +893,9 @@ class RobotTrajCalibrateToolCmd(BaseTrajectoryCmd):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
         default=TrajectorySubCmds.CALIBRATE_TOOL,
-        const=True,
     )
-    args: conlist(
-        item_type=conint(ge=1),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    args: list[Annotated[int, Field(ge=1)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )

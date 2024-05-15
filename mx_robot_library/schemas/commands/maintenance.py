@@ -1,7 +1,8 @@
 from enum import Enum
-from typing import Any, Dict
+from typing import Annotated, Any, Dict
+from typing_extensions import Literal
 
-from pydantic import Field, conint, conlist, validator
+from pydantic import Field, conint, conlist, validator, field_validator
 
 from mx_robot_library.config import get_settings
 
@@ -15,34 +16,34 @@ class RobotMaintCmds(CmdEnum):
 
     CAM_TRACKING_ON = CmdField(
         title="Camera Tracking On",
-        desciption="Enable camera tracking feature.",
+        description="Enable camera tracking feature.",
         value="cameratrackingon",
     )
     CAM_TRACKING_OFF = CmdField(
         title="Camera Tracking Off",
-        desciption="Disable camera tracking feature.",
+        description="Disable camera tracking feature.",
         value="cameratrackingoff",
     )
     SAVE_VIDEO_CLIP = CmdField(
         title="Save Video Clip",
-        desciption="""Save the last 120s of video stream from the dome camera
+        description="""Save the last 120s of video stream from the dome camera
         to configured FTP server.""",
         value="savevideoclip",
     )
     CLEAR_ROBOT_MSG = CmdField(
         title="Clear Robot Message",
-        desciption="Clear last information message from robot controller.",
+        description="Clear last information message from robot controller.",
         value="clearrobotmsg",
     )
     CLEAR_MEMORY = CmdField(
         title="Clear Robot Memory",
-        desciption="""Assume there are no sample nor plate in the tool
+        description="""Assume there are no sample nor plate in the tool
         or on the diffractometer.""",
         value="clearmemory",
     )
     PLC_SOFT_RESET = CmdField(
         title="Soft Reset PLC",
-        desciption="""Initiate a warm reboot of the PLC and restart
+        description="""Initiate a warm reboot of the PLC and restart
         application on robot.""",
         value="resetprogram",
     )
@@ -59,19 +60,15 @@ class RobotMaintCmd(BaseCmdModel):
 class BaseRobotMaintSetSample(BaseCmdModel):
     """Abstract Robot Maintenance Set Sample"""
 
-    args: conlist(
-        item_type=int,
-        min_items=3,
-        max_items=3,
-    ) = Field(
+    args: list[int] = Field(
         title="Arguments",
+        min_length=3,
+        max_length=3,
     )
 
-    @validator("args", always=True)
-    def validate_args(
-        cls, v: list[int], values: Dict[str, Any]  # noqa: B902
-    ) -> list[int]:
-        puck_num, sample_num, sample_type = v
+    @field_validator("args", mode="after")
+    def validate_args(self, value: list[int]) -> list[int]:
+        puck_num, sample_num, sample_type = value
         if not puck_num >= 1:
             raise ValueError("Ensure puck number is greater than or equal to 1.")
         if not puck_num <= config.ASC_NUM_PUCKS:
@@ -88,7 +85,7 @@ class BaseRobotMaintSetSample(BaseCmdModel):
             raise ValueError(
                 f'Sample type "{sample_type}" not supported, valid options are (1 → Hampton / 0 → Other).'  # noqa: E501,B950,B907
             )
-        return v
+        return value
 
 
 class RobotMaintSetDiffSampleCmd(BaseRobotMaintSetSample):
@@ -106,7 +103,7 @@ class RobotMaintSetDiffSampleCmd(BaseRobotMaintSetSample):
         2: Sample Type (1 → Hampton / 0 → Other)
     """
 
-    cmd: str = Field(title="Command", default="setdiffr", const=True)
+    cmd: Literal["setdiffr"] = Field(title="Command", default="setdiffr")
 
 
 class RobotMaintSetToolSampleCmd(BaseRobotMaintSetSample):
@@ -125,29 +122,25 @@ class RobotMaintSetToolSampleCmd(BaseRobotMaintSetSample):
         3: Jaw Number (Double grippers only) (0 → jaw A / 1 → jaw B)
     """
 
-    cmd: str = Field(title="Command", default="settool", const=True)
-    args: conlist(
-        item_type=int,
-        min_items=4,
-        max_items=4,
-    ) = Field(
+    cmd: Literal["settool"] = Field(title="Command", default="settool")
+    args: list[int] = Field(
         title="Arguments",
+        min_length=4,
+        max_length=4,
     )
 
-    @validator("args", always=True)
-    def validate_args(
-        cls, v: list[int], values: Dict[str, Any]  # noqa: B902
-    ) -> list[int]:
-        puck_num, sample_num, sample_type, jaw_num = v
+    @field_validator("args", mode="after")
+    def validate_args(self, value: list[int]) -> list[int]:
+        puck_num, sample_num, sample_type, jaw_num = value
         super().validate_args(
             v=[puck_num, sample_num, sample_type],
-            values=values,
+            values=value,
         )
         if jaw_num not in (0, 1):
             raise ValueError(
                 f'Jaw number "{jaw_num}" not supported, valid options are (0 → jaw A / 1 → jaw B).'  # noqa: E501,B950,B907
             )
-        return v
+        return value
 
 
 class RobotMaintSetMaxSoakCmd(BaseCmdModel):
@@ -162,13 +155,11 @@ class RobotMaintSetMaxSoakCmd(BaseCmdModel):
         List containing a single integer to set soaking timeout.
     """
 
-    cmd: str = Field(title="Command", default="setmaxsoaktime", const=True)
-    args: conlist(
-        item_type=conint(ge=1, le=10800),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    cmd: Literal["setmaxsoaktime"] = Field(title="Command", default="setmaxsoaktime")
+    args: list[Annotated[int, Field(ge=1, le=10800)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -184,13 +175,11 @@ class RobotMaintSetMaxSoakNumCmd(BaseCmdModel):
         List containing a single integer to set soaking cycle number.
     """
 
-    cmd: str = Field(title="Command", default="setmaxsoaknb", const=True)
-    args: conlist(
-        item_type=conint(ge=1, le=48),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    cmd: Literal["setmaxsoaknb"] = Field(title="Command", default="setmaxsoaknb")
+    args: list[Annotated[int, Field(ge=1, le=48)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -208,13 +197,11 @@ class RobotMaintSetAutoCloseLidCmd(BaseCmdModel):
         List containing a single integer to set auto close lid timer.
     """
 
-    cmd: str = Field(title="Command", default="setautocloselidtimer", const=True)
-    args: conlist(
-        item_type=conint(ge=1, le=34560),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    cmd: Literal["setautocloselidtimer"] = Field(title="Command", default="setautocloselidtimer")
+    args: list[Annotated[int, Field(ge=1, le=34560)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -232,13 +219,11 @@ class RobotMaintSetAutoDryCmd(BaseCmdModel):
         List containing a single integer to set auto dry timeout.
     """
 
-    cmd: str = Field(title="Command", default="setautodrytimer", const=True)
-    args: conlist(
-        item_type=conint(ge=1, le=34560),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    cmd: Literal["setautodrytimer"] = Field(title="Command", default="setautodrytimer")
+    args: list[Annotated[int, Field(ge=1, le=34560)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -254,13 +239,11 @@ class RobotMaintSetCoolTimeCmd(BaseCmdModel):
         List containing a single integer to set gripper cooling time.
     """
 
-    cmd: str = Field(title="Command", default="setgrippercoolingtimer", const=True)
-    args: conlist(
-        item_type=conint(ge=0, le=60),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    cmd: Literal["setgrippercoolingtimer"] = Field(title="Command", default="setgrippercoolingtimer")
+    args: list[Annotated[int, Field(ge=0, le=60)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -275,13 +258,11 @@ class RobotMaintSetHighLN2Cmd(BaseCmdModel):
         List containing a single integer to set high LN2 threshold.
     """
 
-    cmd: str = Field(title="Command", default="sethighln2", const=True)
-    args: conlist(
-        item_type=conint(ge=0, le=100),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    cmd: Literal["sethighln2"] = Field(title="Command", default="sethighln2")
+    args: list[Annotated[int, Field(ge=0, le=100)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -296,13 +277,11 @@ class RobotMaintSetLowLN2Cmd(BaseCmdModel):
         List containing a single integer to set low LN2 threshold.
     """
 
-    cmd: str = Field(title="Command", default="setlowln2", const=True)
-    args: conlist(
-        item_type=conint(ge=0, le=100),
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    cmd: Literal["setlowln2"] = Field(title="Command", default="setlowln2")
+    args: list[Annotated[int, Field(ge=0, le=100)]] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )
 
 
@@ -323,11 +302,9 @@ class RobotMaintGotoCamPosCmd(BaseCmdModel):
     Move the camera to the position given in argument.
     """
 
-    cmd: str = Field(title="Command", default="gotocameraposition", const=True)
-    args: conlist(
-        item_type=CameraPositions,
-        min_items=1,
-        max_items=1,
-    ) = Field(
+    cmd: Literal["gotocameraposition"] = Field(title="Command", default="gotocameraposition")
+    args: list[CameraPositions] = Field(
         title="Arguments",
+        min_length=1,
+        max_length=1,
     )

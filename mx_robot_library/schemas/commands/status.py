@@ -8,22 +8,22 @@ class RobotStatusCmds(CmdEnum):
 
     GET_ASC_STATE = CmdField(
         title="Get ASC State",
-        desciption="Ask for the sample changer status.",
+        description="Ask for the sample changer status.",
         value="state",
     )
     GET_PLC_INPUTS = CmdField(
         title="Get PLC Inputs",
-        desciption="Ask for the status of the PLC inputs.",
+        description="Ask for the status of the PLC inputs.",
         value="di",
     )
     GET_PLC_OUTPUTS = CmdField(
         title="Get PLC Outputs",
-        desciption="Ask for the status of the PLC outputs.",
+        description="Ask for the status of the PLC outputs.",
         value="do",
     )
     GET_SAMPLE_DATA = CmdField(
         title="Get Sample Data",
-        desciption="""Ask for sample data (time statistics given in s.,
+        description="""Ask for sample data (time statistics given in s.,
         pucks position-DataMatrix mapping table, etc…).""",
         value="sampledata",
     )

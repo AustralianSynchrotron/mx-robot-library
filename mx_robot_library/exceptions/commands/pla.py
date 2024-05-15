@@ -16,7 +16,7 @@ class NotPointingError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bpoint\b.*\bpuck\b.*\bfirst\b.*",
+        pattern=r"(?i).*\bpoint\b.*\bpuck\b.*\bfirst\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Point a puck first.")

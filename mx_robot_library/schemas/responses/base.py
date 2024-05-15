@@ -1,7 +1,7 @@
 import re
-from typing import Any, Dict, Optional, Union
+from typing import Annotated, Any, Optional, Union
 
-from pydantic import BaseModel, Field, validate_arguments
+from pydantic import BaseModel, ConfigDict, Field, validate_call, ValidationInfo
 from typing_extensions import Self
 
 from ...exceptions.base import PLCError
@@ -10,25 +10,24 @@ from ..commands.status import RobotStatusCmds
 ROBOT_STATUS_CMD_STRS: tuple[str, ...] = tuple([str(_val) for _val in RobotStatusCmds])
 
 
-def compute_error(v: Any, values: Dict[str, Any]) -> Union[Dict[str, Any], Any, None]:
+def compute_error(value: Any, info: ValidationInfo, /) -> Union[PLCError, None]:
     """Compute error from parsed "cmd" and "msg".
 
     Parameters
     ----------
-    v : Any
+    value : Any
         Current value.
-    values : Dict[str, Any]
-        Model values.
+    info : ValidationInfo
+        Validation info.
 
     Returns
     -------
-    Union[Dict[str, Any], Any, None]
+    Union[PLCError, None]
         Computed value or default.
     """
-
-    if v is None:
-        _cmd: Any = values.get("cmd")
-        _resp: Any = values.get("msg")
+    if value is None:
+        _cmd: Any = info.data.get("cmd")
+        _resp: Any = info.data.get("msg")
 
         if _cmd in ROBOT_STATUS_CMD_STRS and isinstance(_resp, str):
             # Response is for a status command
@@ -50,7 +49,7 @@ def compute_error(v: Any, values: Dict[str, Any]) -> Union[Dict[str, Any], Any, 
         elif isinstance(_cmd, str) and isinstance(_resp, str):
             # Error exists, let Pydantic try to match an exception by response
             return {"cmd": _cmd, "response": _resp}
-    return v
+    return value
 
 
 class BaseResponse(BaseModel):
@@ -69,18 +68,17 @@ class BaseResponse(BaseModel):
     error: Optional[PLCError] = Field(
         title="Raised Exception",
         description="Error returned by the PLC if raised.",
+        validate_default=True,
         default=None,
     )
 
-    class Config:
-        allow_mutation: bool = False
-        anystr_strip_whitespace: bool = True
+    model_config = ConfigDict(frozen=True, str_strip_whitespace=True)
 
     @classmethod
-    @validate_arguments
+    @validate_call
     def _parse_raw_values(
-        cls: type[Self],
-        cmd: Union[str, Any],
+        cls,
+        cmd: Annotated[Union[str, Any], Field(union_mode="left_to_right")],
         raw: str,
     ) -> dict[str, Any]:
         """Parse raw command output from the robot.
@@ -101,11 +99,11 @@ class BaseResponse(BaseModel):
         return {"cmd": str(cmd), "msg": raw}
 
     @classmethod
-    @validate_arguments
+    @validate_call
     def parse_cmd_output(
-        cls: type[Self],
-        cmd: Union[str, Any],
-        obj: Union[str, bytes],
+        cls,
+        cmd: Annotated[Union[str, Any], Field(union_mode="left_to_right")],
+        obj: Annotated[Union[str, bytes], Field(union_mode="left_to_right")],
     ) -> Self:
         """Parse output from returned command to create a new object instance.
 
@@ -122,7 +120,7 @@ class BaseResponse(BaseModel):
             New model instance.
         """
 
-        return cls.parse_obj(cls._parse_raw_values(cmd=cmd, raw=obj))
+        return cls.model_validate(cls._parse_raw_values(cmd=cmd, raw=obj))
 
 
 class BaseStatusResponse(BaseResponse):
@@ -135,9 +133,9 @@ class BaseStatusResponse(BaseResponse):
     )
 
     @classmethod
-    @validate_arguments
+    @validate_call
     def _parse_raw_values(
-        cls: type[Self],
+        cls,
         cmd: RobotStatusCmds,
         raw: str,
     ) -> dict[str, tuple[str, ...]]:
@@ -173,11 +171,11 @@ class BaseStatusResponse(BaseResponse):
         return res
 
     @classmethod
-    @validate_arguments
+    @validate_call
     def parse_cmd_output(
-        cls: type[Self],
+        cls,
         cmd: RobotStatusCmds,
-        obj: Union[str, bytes],
+        obj: Annotated[Union[str, bytes], Field(union_mode="left_to_right")],
     ) -> Self:
         """Parse output from returned command to create a new object instance.
 
@@ -194,4 +192,4 @@ class BaseStatusResponse(BaseResponse):
             New model instance.
         """
 
-        return cls.parse_obj(cls._parse_raw_values(cmd=cmd, raw=obj))
+        return cls.model_validate(cls._parse_raw_values(cmd=cmd, raw=obj))

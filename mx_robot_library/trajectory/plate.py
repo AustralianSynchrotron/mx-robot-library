@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import validate_arguments
+from pydantic import validate_call
 from typing_extensions import Annotated
 
 from mx_robot_library.schemas.commands.trajectory import (
@@ -24,7 +24,7 @@ class PlateTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.PUT_PLATE)
     @check_tool(tool=RobotTools.PLATE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def mount(
         self,
         plate: Plate,
@@ -55,7 +55,7 @@ class PlateTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.GET_PLATE)
     @check_tool(tool=RobotTools.PLATE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def unmount(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -82,7 +82,7 @@ class PlateTraj(SubTrajectory, channel=CmdChannel.CMD):
 
     @raise_ex
     @check_tool(tool=RobotTools.PLATE_GRIPPER, on_error=True)
-    @validate_arguments
+    @validate_call
     def unmount_then_mount(
         self,
         plate: Plate,
@@ -116,7 +116,7 @@ class PlateTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.PLATE_TO_DIF)
     @check_tool(tool=RobotTools.PLATE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def pick_and_move(
         self,
         plate: Plate,

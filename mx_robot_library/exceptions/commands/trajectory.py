@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Annotated, Optional, Union
 
 from pydantic import Field
 from pydantic.dataclasses import dataclass
@@ -16,7 +16,7 @@ class LidMovingError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bdisabled\b.*\blid\b.*\bmoving\b.*",
+        pattern=r"(?i).*\bdisabled\b.*\blid\b.*\bmoving\b.*",
         default=None,
     )
     msg: str = Field(
@@ -40,7 +40,7 @@ class PowerDisabled(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bpower\b.*\bdisabled\b.*",
+        pattern=r"(?i).*\bpower\b.*\bdisabled\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Robot power disabled.")
@@ -60,7 +60,7 @@ class NotReadyError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bnot\b.*\bready\b.*",
+        pattern=r"(?i).*\bnot\b.*\bready\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Robot not ready.")
@@ -80,7 +80,7 @@ class ChangeToolError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bchange\b.*\btool\b.*\bfirst\b.*",
+        pattern=r"(?i).*\bchange\b.*\btool\b.*\bfirst\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Change tool first.")
@@ -101,7 +101,7 @@ class PositionRejected(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\btrajectory\b.*\bmust\b.*\bstart\b.*\bposition\b:.*",
+        pattern=r"(?i).*\btrajectory\b.*\bmust\b.*\bstart\b.*\bposition\b:.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Robot at wrong start position.")
@@ -121,7 +121,7 @@ class ToolAlreadyEquiped(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\btool\b.*\balready\b.*\bequipped\b:.*",
+        pattern=r"(?i).*\btool\b.*\balready\b.*\bequipped\b:.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Tool already equipped.")
@@ -132,11 +132,14 @@ class ToolAlreadyEquiped(PLCError):
     )
 
 
-trajectory_errors: TypeAlias = Union[
-    LidMovingError,
-    PowerDisabled,
-    NotReadyError,
-    ChangeToolError,
-    PositionRejected,
-    ToolAlreadyEquiped,
+trajectory_errors: TypeAlias = Annotated[
+    Union[
+        LidMovingError,
+        PowerDisabled,
+        NotReadyError,
+        ChangeToolError,
+        PositionRejected,
+        ToolAlreadyEquiped,
+    ],
+    Field(union_mode="left_to_right"),
 ]

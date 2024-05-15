@@ -1,6 +1,9 @@
 from typing import Any, Union
-
 from typing_extensions import Self
+from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import CoreSchema
+from pydantic_core.core_schema import no_info_before_validator_function
 
 from ..common import Common
 from ..config import get_settings
@@ -50,7 +53,7 @@ class Client(RootClient):
         self._common: Union[Common, None] = None
 
     @classmethod
-    def validate(cls, value: Any) -> Self:
+    def _validate(cls, value: Any) -> Self:
         if isinstance(value, str):
             try:
                 return cls(host=value)
@@ -66,7 +69,26 @@ class Client(RootClient):
                 return cls(*value)
             except Exception:
                 pass
-        return super(Client, cls).validate(value=value)
+        return value
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls: type[Self],
+        source: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        return no_info_before_validator_function(
+            function=cls._validate,
+            schema=handler(source),
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls: type[Self],
+        schema: CoreSchema,
+        handler: GetJsonSchemaHandler,
+    ) -> JsonSchemaValue:
+        return handler(schema)
 
     @property
     def status(self) -> Status:

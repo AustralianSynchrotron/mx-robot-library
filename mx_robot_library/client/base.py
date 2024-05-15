@@ -1,18 +1,17 @@
 from enum import Enum
 from socket import AF_INET, SOCK_STREAM, socket
-from typing import TYPE_CHECKING, Any
+from typing import Any, cast
 
-from pydantic import validate_arguments
+from pydantic import validate_call
+from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import CoreSchema
+from pydantic_core.core_schema import is_instance_schema
 from typing_extensions import Self
 
 from ..config import get_settings
 from ..logger import get_logger
 from ..types import HostAddress
-
-if TYPE_CHECKING:
-    from pydantic.typing import CallableGenerator
-
-    from .client import Client
 
 logger = get_logger()
 config = get_settings()
@@ -29,19 +28,28 @@ class BaseClient:
     """Abstract Base Client"""
 
     @classmethod
-    def __get_validators__(cls) -> "CallableGenerator":
-        yield cls.validate
+    def __get_pydantic_core_schema__(
+        cls: type[Self],
+        source: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        return is_instance_schema(cls=cls)
 
     @classmethod
-    def validate(cls, value: Any) -> Self:
-        if isinstance(value, cls):
-            return value
+    def __get_pydantic_json_schema__(
+        cls: type[Self],
+        schema: CoreSchema,
+        handler: GetJsonSchemaHandler,
+    ) -> JsonSchemaValue:
+        return handler(schema)
+
+    __hash__ = object.__hash__
 
 
 class RootClient(BaseClient):
     """Root Client"""
 
-    @validate_arguments
+    @validate_call
     def __init__(
         self,
         host: HostAddress,
@@ -61,12 +69,12 @@ class RootClient(BaseClient):
         readonly : bool, optional
             Is created client readonly, by default True
         """
-        self.host: str = host
+        self.host = cast(str, host)
         self.status_port: int = status_port
         self.cmd_port: int = cmd_port
         self.readonly: bool = readonly
 
-    @validate_arguments
+    @validate_call
     def send_cmd(
         self,
         cmd: bytes,
@@ -139,7 +147,7 @@ class SubClient(BaseClient):
         else:
             cls.channel = CmdChannel.STATUS
 
-    @validate_arguments
+    @validate_call
     def __init__(self, client: RootClient) -> None:
         """
         Parameters
@@ -173,7 +181,7 @@ class SubClient(BaseClient):
             return self._client.cmd_port
         return self._client.status_port
 
-    @validate_arguments
+    @validate_call
     def send_cmd(self, cmd: bytes, timeout: float = config.ASC_CMD_TIMEOUT) -> bytes:
         """Send a command to the robot, then receive it's response.
 

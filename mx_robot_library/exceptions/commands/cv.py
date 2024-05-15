@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Annotated, Optional, Union
 
 from pydantic import Field
 from pydantic.dataclasses import dataclass
@@ -16,7 +16,7 @@ class DewarClosedError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bopen\b.*\bdewar\b.*\bfirst\b.*",
+        pattern=r"(?i).*\bopen\b.*\bdewar\b.*\bfirst\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="The dewar is closed.")
@@ -36,7 +36,7 @@ class CVPositionError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bmust\b.*\bat\b.*\bsoak\b.*\bhome\b.*",
+        pattern=r"(?i).*\bmust\b.*\bat\b.*\bsoak\b.*\bhome\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Robot must be at SOAK or HOME.")
@@ -56,7 +56,7 @@ class ExternalLightingDisabled(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\benable\b.*\bexternal\b.*\blighting\b.*\bfirst\b.*",
+        pattern=r"(?i).*\benable\b.*\bexternal\b.*\blighting\b.*\bfirst\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="External lighting must be enabled.")
@@ -67,6 +67,11 @@ class ExternalLightingDisabled(PLCError):
     )
 
 
-cv_errors: TypeAlias = Union[
-    DewarClosedError, CVPositionError, ExternalLightingDisabled
+cv_errors: TypeAlias = Annotated[
+    Union[
+        DewarClosedError,
+        CVPositionError,
+        ExternalLightingDisabled,
+    ],
+    Field(union_mode="left_to_right"),
 ]

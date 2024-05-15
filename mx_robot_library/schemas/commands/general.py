@@ -11,45 +11,45 @@ class RobotGeneralCmds(CmdEnum):
     # Power Commands
     ON = CmdField(
         title="Power On",
-        desciption="Switch the robot power on.",
+        description="Switch the robot power on.",
         value="on",
     )
     OFF = CmdField(
         title="Power Off",
-        desciption="Switch the robot power off.",
+        description="Switch the robot power off.",
         value="off",
     )
     PANIC = CmdField(
         title="Emergency Stop",
-        desciption="""Stop the robot immediately,
+        description="""Stop the robot immediately,
         abort the trajectory and shut arm power off.""",
         value="panic",
     )
     RESET = CmdField(
         title="Fault Reset",
-        desciption="Acknowledge security fault and allow user to bring power back.",
+        description="Acknowledge security fault and allow user to bring power back.",
         value="reset",
     )
 
     # Open/Close Tool Commands
     OPEN_TOOL_A = CmdField(
         title="Open Tool (A)",
-        desciption="Open the current gripper (jaw A in case of double gripper).",
+        description="Open the current gripper (jaw A in case of double gripper).",
         value="opentool",
     )
     CLOSE_TOOL_A = CmdField(
         title="Close Tool (A)",
-        desciption="Close the current gripper (jaw A in case of double gripper).",
+        description="Close the current gripper (jaw A in case of double gripper).",
         value="closetool",
     )
     OPEN_TOOL_B = CmdField(
         title="Open Tool (B)",
-        desciption="Open the current gripper (jaw B in case of double gripper).",
+        description="Open the current gripper (jaw B in case of double gripper).",
         value="opentoolb",
     )
     CLOSE_TOOL_B = CmdField(
         title="Close Tool (B)",
-        desciption="Close the current gripper (jaw B in case of double gripper).",
+        description="Close the current gripper (jaw B in case of double gripper).",
         value="closetoolb",
     )
 
@@ -63,71 +63,71 @@ class RobotGeneralCmds(CmdEnum):
     #     get from 0.01% to 100%.
     SPEED_UP = CmdField(
         title="Increase Speed",
-        desciption="Increase robot speed (range from 0.01% to 100%).",
+        description="Increase robot speed (range from 0.01% to 100%).",
         value="speedup",
     )
     SLOW_DOWN = CmdField(
         title="Decrease Speed",
-        desciption="Decrease robot speed (range from 0.01% to 100%).",
+        description="Decrease robot speed (range from 0.01% to 100%).",
         value="speeddown",
     )
 
     # Trajectory Commands
     ABORT = CmdField(
         title="Abort Trajectory",
-        desciption="Abort running trajectory.",
+        description="Abort running trajectory.",
         value="abort",
     )
     PAUSE = CmdField(
         title="Pause Trajectory",
-        desciption="Pause running trajectory, stopping the robot in position.",
+        description="Pause running trajectory, stopping the robot in position.",
         value="pause",
     )
     RESTART = CmdField(
         title="Restart Trajectory",
-        desciption="Resume the trajectory after pause or default.",
+        description="Resume the trajectory after pause or default.",
         value="restart",
     )
 
     # Dewar Commands
     OPEN_LID = CmdField(
         title="Open Lid",
-        desciption="Open Dewar Lid.",
+        description="Open Dewar Lid.",
         value="openlid",
     )
     CLOSE_LID = CmdField(
         title="Close Lid",
-        desciption="Close Dewar Lid.",
+        description="Close Dewar Lid.",
         value="closelid",
     )
 
     # Goniometer Commands
     MAGNET_ON = CmdField(
         title="Magnet On",
-        desciption="Switch on the magnetization of the goniometer electro-magnet.",
+        description="Switch on the magnetization of the goniometer electro-magnet.",
         value="magneton",
     )
     MAGNET_OFF = CmdField(
         title="Magnet Off",
-        desciption="Switch off the magnetization of the goniometer electro-magnet.",
+        description="Switch off the magnetization of the goniometer electro-magnet.",
         value="magnetoff",
     )
 
     # Miscellaneous Commands
     CLEAR_BCRD = CmdField(
         title="Clear Barcode",
-        desciption="Clear the barcode/datamatrix return message.",
-        value="clearbrcd",
+        description="Clear the barcode/datamatrix return message.",
+        value="clearbcrd",
     )
     HEATER_ON = CmdField(
         # I think this heater is to prevent condensation accumulating on the robot?
         title="Heater On",
-        desciption="Switch on the heater.",
+        description="Switch on the heater.",
         value="heateron",
     )
     HEATER_OFF = CmdField(
         title="Heater Off",
-        desciption="Switch off the heater.",
+        description="Switch off the heater.",
         value="heateroff",
     )
 
@@ -141,5 +141,4 @@ class RobotGeneralCmd(BaseCmdModel):
     args: Optional[list] = Field(
         title="Arguments",
         default=None,
-        const=True,
     )
