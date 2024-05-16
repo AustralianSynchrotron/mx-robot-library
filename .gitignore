@@ -70,3 +70,5 @@ scratch.py
 
 .venv/
 .mypy_cache/
+
+/test.py

@@ -1,5 +1,4 @@
-from pydantic import Field, validate_arguments, validator
-from typing_extensions import Self
+from pydantic import Field, field_validator, validate_call
 
 from ...config import get_settings
 from ..commands.status import RobotStatusCmds
@@ -14,21 +13,16 @@ class SampleDataResponse(BaseStatusResponse):
     puck_matrix: list[str] = Field(
         title="Puck Presense",
         description="Puck presense mapping.",
-        min_items=config.ASC_NUM_PUCKS,
-        max_items=config.ASC_NUM_PUCKS,
+        min_length=config.ASC_NUM_PUCKS,
+        max_length=config.ASC_NUM_PUCKS,
     )
 
-    _compute_error = validator(
-        "error",
-        pre=True,
-        always=True,
-        allow_reuse=True,
-    )(compute_error)
+    _compute_error = field_validator("error", mode="before")(compute_error)
 
     @classmethod
-    @validate_arguments
+    @validate_call
     def _parse_raw_values(
-        cls: type[Self],
+        cls,
         cmd: RobotStatusCmds,
         raw: str,
     ) -> dict[str, tuple[str, ...]]:

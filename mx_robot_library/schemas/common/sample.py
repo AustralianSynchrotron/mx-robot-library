@@ -1,7 +1,16 @@
 from enum import Enum
-from typing import Any, Optional, Type, Union
+from typing import Annotated, Any, Optional, Type, Union
 
-from pydantic import BaseModel, Field, validate_arguments
+from pydantic import (
+    BaseModel,
+    Field,
+    GetCoreSchemaHandler,
+    GetJsonSchemaHandler,
+    validate_call,
+)
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import CoreSchema
+from pydantic_core.core_schema import no_info_before_validator_function
 from typing_extensions import Self
 
 from mx_robot_library.config import get_settings
@@ -30,8 +39,13 @@ class BaseSample(BaseModel):
         return super().__eq__(__value)
 
     @staticmethod
-    @validate_arguments
-    def is_valid_id(id: Union[int, str]) -> bool:
+    @validate_call
+    def is_valid_id(
+        id: Annotated[
+            Union[int, str],
+            Field(union_mode="left_to_right"),
+        ],
+    ) -> bool:
         """Simple method to check if an ID is valid.
 
         Parameters
@@ -51,10 +65,29 @@ class BaseSample(BaseModel):
         return id >= 1
 
     @classmethod
-    def validate(cls: Type[Self], value: Any) -> Self:
+    def _validate(cls: Type[Self], value: Any) -> Self:
         if value == "-1":
             return None
-        return super().validate(value=value)
+        return value
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls: type[Self],
+        source: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        return no_info_before_validator_function(
+            function=cls._validate,
+            schema=handler(source),
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls: type[Self],
+        schema: CoreSchema,
+        handler: GetJsonSchemaHandler,
+    ) -> JsonSchemaValue:
+        return handler(schema)
 
 
 class Puck(BaseSample):
@@ -71,10 +104,31 @@ class Puck(BaseSample):
         return self.name or f"puck_{self.id}"
 
     @classmethod
-    def validate(cls: Type[Self], value: Any) -> Self:
-        if isinstance(value, (str, int)) and cls.is_valid_id(value):
+    def _validate(cls: Type[Self], value: Any) -> Self:
+        if (isinstance(value, str) or isinstance(value, int)) and cls.is_valid_id(
+            value
+        ):
             value = {"id": value}
-        return super().validate(value=value)
+        return value
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls: type[Self],
+        source: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        return no_info_before_validator_function(
+            function=cls._validate,
+            schema=handler(source),
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls: type[Self],
+        schema: CoreSchema,
+        handler: GetJsonSchemaHandler,
+    ) -> JsonSchemaValue:
+        return handler(schema)
 
 
 class HotPuck(Puck):
@@ -96,7 +150,7 @@ class Pin(BaseSample):
         le=config.ASC_NUM_PINS,
         ge=1,
     )
-    puck: Union[Puck, HotPuck] = Field(
+    puck: Annotated[Union[Puck, HotPuck], Field(union_mode="left_to_right")] = Field(
         title="Puck",
     )
     type: PinType = Field(
@@ -118,14 +172,33 @@ class Pin(BaseSample):
         return super().__eq__(__value)
 
     @classmethod
-    def validate(cls: Type[Self], value: Any) -> Self:
-        if isinstance(value, (tuple, list)) and len(value) >= 2:
+    def _validate(cls: Type[Self], value: Any) -> Self:
+        if isinstance(value, tuple) or isinstance(value, list) and len(value) >= 2:
             _puck_id, _id = value[:2]
             if cls.is_valid_id(_puck_id) or cls.is_valid_id(_id):
                 value = {"id": _id, "puck": {"id": _puck_id}}
             else:
                 return None
-        return super().validate(value=value)
+        return value
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls: Type[Self],
+        source: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        return no_info_before_validator_function(
+            function=cls._validate,
+            schema=handler(source),
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls: Type[Self],
+        schema: CoreSchema,
+        handler: GetJsonSchemaHandler,
+    ) -> JsonSchemaValue:
+        return handler(schema)
 
 
 class Plate(BaseSample):
@@ -139,9 +212,28 @@ class Plate(BaseSample):
     # datamatrix: ? TBD
 
     @classmethod
-    def validate(cls: Type[Self], value: Any) -> Self:
+    def _validate(cls: Type[Self], value: Any) -> Self:
         if (isinstance(value, str) or isinstance(value, int)) and cls.is_valid_id(
             value
         ):
             value = {"id": value}
-        return super().validate(value=value)
+        return value
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls: Type[Self],
+        source: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        return no_info_before_validator_function(
+            function=cls._validate,
+            schema=handler(source),
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls: Type[Self],
+        schema: CoreSchema,
+        handler: GetJsonSchemaHandler,
+    ) -> JsonSchemaValue:
+        return handler(schema)

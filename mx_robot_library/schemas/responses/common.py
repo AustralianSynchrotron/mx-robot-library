@@ -1,6 +1,6 @@
-from typing import Optional, Union
+from typing import Annotated, Optional, Union
 
-from pydantic import Field, validate_arguments, validator
+from pydantic import Field, field_validator, validate_call
 from typing_extensions import Self
 
 from ...exceptions.base import UnknownPLCError
@@ -12,25 +12,25 @@ from .base import BaseResponse, compute_error
 class CommonResponse(BaseResponse):
     """Common Response Model"""
 
-    error: Optional[Union[common_errors, UnknownPLCError]] = Field(
+    error: Optional[
+        Annotated[
+            Union[common_errors, UnknownPLCError], Field(union_mode="left_to_right")
+        ]
+    ] = Field(
         title="Raised Exception",
         description="Error returned by the PLC if raised.",
+        validate_default=True,
         default=None,
     )
 
-    _compute_error = validator(
-        "error",
-        pre=True,
-        always=True,
-        allow_reuse=True,
-    )(compute_error)
+    _compute_error = field_validator("error", mode="before")(compute_error)
 
     @classmethod
-    @validate_arguments
+    @validate_call
     def parse_cmd_output(
-        cls: type[Self],
+        cls,
         cmd: RobotGeneralCmds,
-        obj: Union[str, bytes],
+        obj: Annotated[Union[str, bytes], Field(union_mode="left_to_right")],
     ) -> Self:
         """Parse output from returned command to create a new object instance.
 
@@ -47,4 +47,4 @@ class CommonResponse(BaseResponse):
             New model instance.
         """
 
-        return cls.parse_obj(cls._parse_raw_values(cmd=cmd, raw=obj))
+        return cls.model_validate(cls._parse_raw_values(cmd=cmd, raw=obj))

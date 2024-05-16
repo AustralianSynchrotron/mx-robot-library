@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
-from pydantic import validate_arguments
+from pydantic import validate_call
 from typing_extensions import Annotated
 
 from ..client.base import CmdChannel
@@ -38,7 +38,7 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.PUT)
     @check_tool(tool=RobotTools.DOUBLE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def mount(
         self,
         pin: Pin,
@@ -105,7 +105,7 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.GET)
     @check_tool(tool=RobotTools.DOUBLE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def unmount(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -143,7 +143,7 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.GET_PUT)
     @check_tool(tool=RobotTools.DOUBLE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def unmount_then_mount(
         self,
         pin: Pin,
@@ -214,7 +214,7 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.PICK)
     @check_tool(tool=RobotTools.DOUBLE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def prepick(
         self,
         pin: Pin,
@@ -253,7 +253,7 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
 
     @raise_ex
     @check_tool(tool=RobotTools.DOUBLE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def read_datamatrix(
         self,
         pin: Pin,
@@ -288,7 +288,7 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.BACK)
     @check_tool(tool=RobotTools.DOUBLE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def return_pin(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -314,7 +314,7 @@ class PuckTraj(SubTrajectory, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.GOTO_DIF)
     @check_tool(tool=RobotTools.DOUBLE_GRIPPER)
-    @validate_arguments
+    @validate_call
     def pick_and_move(
         self,
         pin: Pin,

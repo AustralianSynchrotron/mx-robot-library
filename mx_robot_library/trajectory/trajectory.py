@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional, Union
 
-from pydantic import validate_arguments
+from pydantic import validate_call
 from typing_extensions import Annotated
 
 from ..client.base import CmdChannel, SubClient
@@ -111,7 +111,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @wait_for_path(path=RobotPaths.HOME)
-    @validate_arguments
+    @validate_call
     def home(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -138,7 +138,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @wait_for_path(path=RobotPaths.RECOVER)
-    @validate_arguments
+    @validate_call
     def recover(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -169,7 +169,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.TEACH_GONI)
     @check_tool(tool=RobotTools.LASER_TOOL)
-    @validate_arguments
+    @validate_call
     def teach_goni(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -184,7 +184,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.TEACH_PUCK)
     @check_tool(tool=RobotTools.LASER_TOOL)
-    @validate_arguments
+    @validate_call
     def teach_puck(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -199,7 +199,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.TEACH_DEWAR)
     @check_tool(tool=RobotTools.LASER_TOOL)
-    @validate_arguments
+    @validate_call
     def teach_dewar(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -214,7 +214,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @wait_for_path(path=RobotPaths.TEACH_PLATE_HOLDER)
     @check_tool(tool=RobotTools.LASER_TOOL)
-    @validate_arguments
+    @validate_call
     def teach_plate_holder(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -228,7 +228,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @check_tool(tool=RobotTools.LASER_TOOL)
-    @validate_arguments
+    @validate_call
     def teach_hotpuck(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -242,7 +242,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @wait_for_path(path=RobotPaths.SOAK)
-    @validate_arguments
+    @validate_call
     def soak(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -270,7 +270,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @wait_for_path(path=RobotPaths.DRY)
-    @validate_arguments
+    @validate_call
     def dry(
         self,
         tool: Optional[Annotated[Tool, RobotTools]] = None,
@@ -299,7 +299,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @wait_for_path(path=RobotPaths.CHANGE_TOOL, timeout=240)
-    @validate_arguments
+    @validate_call
     def change_tool(
         self,
         tool: Annotated[Tool, RobotTools],
@@ -324,7 +324,7 @@ class Trajectory(SubClient, channel=CmdChannel.CMD):
 
     @raise_ex
     @wait_for_path(path=RobotPaths.TOOL_CAL)
-    @validate_arguments
+    @validate_call
     def calibrate_tool(
         self,
         tool: Annotated[Tool, RobotTools],

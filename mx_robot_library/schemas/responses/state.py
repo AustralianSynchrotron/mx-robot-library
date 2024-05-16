@@ -1,7 +1,7 @@
 from types import MappingProxyType
 from typing import Optional, Union
 
-from pydantic import Field, validate_arguments, validator
+from pydantic import Field, field_validator, validate_call
 from typing_extensions import Self
 
 from ..commands.status import RobotStatusCmds
@@ -18,104 +18,82 @@ class StateResponse(BaseStatusResponse):
     power: bool = Field(
         title="Power Status",
         description="Whether the PLC is currently sending power to the robot arm.",
-        position=0,
     )
     remote_mode: bool = Field(
         title="Remote Mode",
         description="Whether the robot is currently in remote mode.",
-        position=1,
     )
     fault_or_stopped: bool = Field(
         title="Fault or Stopped",
         description="Fault status or stop mode.",
-        position=2,
     )
     tool: Optional[Tool] = Field(
         title="Tool",
         description="Current tool mounted.",
-        position=3,
     )
     position: Position = Field(
         title="Position",
         description="Current position of the robot arm.",
         default=RobotPositions.UNDEFINED,
-        position=4,
     )
     path: Path = Field(
         title="Command Path",
         description="The function the robot is currently running.",
         default=RobotPaths.UNDEFINED,
-        position=5,
     )
     jaw_a_is_open: bool = Field(
         title="Jaw (A) Is Open",
         description="Jaw (A) is open.",
-        position=6,
     )
     jaw_b_is_open: bool = Field(
         title="Jaw (B) Is Open",
         description="Jaw (B) is open.",
-        position=7,
     )
     jaw_a_pin: Optional[Pin] = Field(
         title="Jaw (A) Pin",
         description="Pin mounted in Jaw (A).",
         default=None,
-        position=(8, 9),
     )
     jaw_b_pin: Optional[Pin] = Field(
         title="Jaw (B) Pin",
         description="Pin mounted in Jaw (B).",
         default=None,
-        position=(10, 11),
     )
     goni_pin: Optional[Pin] = Field(
         title="Goni Pin",
         description="Pin mounted on the goniometer.",
         default=None,
-        position=(12, 13),
     )
     arm_plate: Optional[Plate] = Field(
         title="Arm Plate",
         description="Plate mounted on the arm.",
         default=None,
-        position=14,
     )
     goni_plate: Optional[Plate] = Field(
         title="Goni Plate",
         description="Plate mounted on the goniometer.",
         default=None,
-        position=15,
     )
     seq_running: bool = Field(
         title="Sequence Running",
         description="Sequence is running.",
-        position=17,
     )
     seq_paused: bool = Field(
         title="Sequence Paused",
         description="Sequence is paused.",
-        position=18,
     )
     speed_ratio: float = Field(
         title="Speed Ratio",
         description="Robot speed ratio (%).",
         le=100.0,
         ge=0.0,
-        position=19,
     )
     plc_last_msg: str = Field(
         title="PLC Last Message",
         description="Last information message from PLC.",
-        position=28,
     )
 
-    _compute_error = validator(
-        "error",
-        pre=True,
-        always=True,
-        allow_reuse=True,
-    )(compute_error)
+    _compute_error = field_validator("error", mode="before")(compute_error)
 
     @classmethod
     def _get_position_map(
@@ -128,17 +106,31 @@ class StateResponse(BaseStatusResponse):
         MappingProxyType[str, Union[int, tuple[int, ...]]]
             Field to position mapping.
         """
-        _position_map: dict[str, Union[int, tuple[int, ...]]] = {}
-        for _name, _model in cls.__fields__.items():
-            _field_info = _model.field_info
-            if _field_info.extra.get("position") is not None:
-                _position_map[_name] = _field_info.extra["position"]
+        _position_map: dict[str, Union[int, tuple[int, ...]]] = {
+            "power": 0,
+            "remote_mode": 1,
+            "fault_or_stopped": 2,
+            "tool": 3,
+            "position": 4,
+            "path": 5,
+            "jaw_a_is_open": 6,
+            "jaw_b_is_open": 7,
+            "jaw_a_pin": (8, 9),
+            "jaw_b_pin": (10, 11),
+            "goni_pin": (12, 13),
+            "arm_plate": 14,
+            "goni_plate": 15,
+            "seq_running": 17,
+            "seq_paused": 18,
+            "speed_ratio": 19,
+            "plc_last_msg": 28,
+        }
         return MappingProxyType(_position_map)
 
     @classmethod
-    @validate_arguments
+    @validate_call
     def _parse_raw_values(
-        cls: type[Self],
+        cls,
         cmd: RobotStatusCmds,
         raw: str,
     ) -> dict[str, tuple[str, ...]]:
@@ -166,4 +158,15 @@ class StateResponse(BaseStatusResponse):
                 res[_key] = [_raw_values[pos] for pos in _position]
             elif isinstance(_position, int):
                 res[_key] = _raw_values[_position]
+
+        for _key in ("jaw_a_pin", "jaw_b_pin", "goni_pin"):
+            if _key in res:
+                res[_key] = Pin._validate(res[_key])
+
+        for _key in ("arm_plate", "goni_plate"):
+            if _key in res:
+                res[_key] = Plate._validate(res[_key])
+                if res[_key] == "-1":
+                    res[_key] = None
+
         return res

@@ -1,6 +1,16 @@
 from types import MappingProxyType
 from typing import Any, Union
 
+from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import CoreSchema
+from pydantic_core.core_schema import (
+    chain_schema,
+    int_schema,
+    no_info_after_validator_function,
+    str_schema,
+    union_schema,
+)
 from typing_extensions import Self
 
 from .base import BaseRobotItem, BaseRobotMeta
@@ -10,13 +20,45 @@ class Position(BaseRobotItem):
     """Position Model"""
 
     @classmethod
-    def validate(cls: type[Self], value: Any) -> Self:
-        """ """
-        if (
-            isinstance(value, str) or isinstance(value, int)
-        ) and value in RobotPositions:
-            return RobotPositions[value]
-        return super(Position, cls).validate(value)
+    def _validate(cls: type[Self], value: Union[str, int]) -> Self:
+        return RobotPositions[value]
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls: type[Self],
+        source: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        _core_schema = handler(source)
+        return union_schema(
+            choices=[
+                _core_schema,
+                chain_schema(
+                    steps=[
+                        no_info_after_validator_function(
+                            function=cls._validate,
+                            schema=union_schema(
+                                choices=[
+                                    str_schema(),
+                                    int_schema(),
+                                ],
+                                strict=True,
+                            ),
+                        ),
+                        _core_schema,
+                    ],
+                ),
+            ],
+            mode="left_to_right",
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls: type[Self],
+        schema: CoreSchema,
+        handler: GetJsonSchemaHandler,
+    ) -> JsonSchemaValue:
+        return handler(schema)
 
 
 class RobotPositionsMeta(BaseRobotMeta, item_cls=Position):

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 
-from pydantic import validate_arguments
+from pydantic import validate_call
 
 from .client.base import CmdChannel, SubClient
 from .decorators import raise_ex
@@ -59,7 +59,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
 
     @power.setter
     @raise_ex
-    @validate_arguments
+    @validate_call
     def power(self, value: bool, *args, **kwargs) -> CommonResponse:
         """Set power status of the robot arm.
 
@@ -78,7 +78,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
         )
 
     @raise_ex
-    @validate_arguments
+    @validate_call
     def reset(self, *args, **kwargs) -> bytes:
         """Acknowledge and reset security fault and allow user to bring power back.
 
@@ -90,7 +90,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
         return self.send_cmd(cmd=RobotGeneralCmds.RESET)
 
     @raise_ex
-    @validate_arguments
+    @validate_call
     def speed_up(self, *args, **kwargs) -> CommonResponse:
         """Increase robot speed (range from 0.01% to 100%).
 
@@ -102,7 +102,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
         return self.send_cmd(cmd=RobotGeneralCmds.SPEED_UP)
 
     @raise_ex
-    @validate_arguments
+    @validate_call
     def slow_down(self, *args, **kwargs) -> CommonResponse:
         """Decrease robot speed (range from 0.01% to 100%).
 

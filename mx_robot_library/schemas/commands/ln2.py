@@ -8,22 +8,22 @@ class RobotLN2Cmds(CmdEnum):
 
     LN2_REG_ON = CmdField(
         title="LN2 Level Regulation On",
-        desciption="Start LN2 level regulation in Dewar.",
+        description="Start LN2 level regulation in Dewar.",
         value="regulon",
     )
     LN2_REG_OFF = CmdField(
         title="LN2 Level Regulation Off",
-        desciption="Stop LN2 level regulation in Dewar.",
+        description="Stop LN2 level regulation in Dewar.",
         value="reguloff",
     )
     PS_REG_ON = CmdField(
         title="Phase Separator Regulation On",
-        desciption="Activate phase separator standalone regulation.",
+        description="Activate phase separator standalone regulation.",
         value="ps_regulon",
     )
     PS_REG_OFF = CmdField(
         title="Phase Separator Regulation Off",
-        desciption="Deactivate phase separator standalone regulation.",
+        description="Deactivate phase separator standalone regulation.",
         value="ps_reguloff",
     )
 

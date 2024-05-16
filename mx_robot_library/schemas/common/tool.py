@@ -1,7 +1,10 @@
 from types import MappingProxyType
 from typing import Any, Optional, Union
 
-from pydantic import Field
+from pydantic import Field, GetCoreSchemaHandler, GetJsonSchemaHandler
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import CoreSchema
+from pydantic_core.core_schema import no_info_before_validator_function
 from typing_extensions import Self
 
 from mx_robot_library.config import get_settings
@@ -24,11 +27,30 @@ class Tool(BaseRobotItem):
     )
 
     @classmethod
-    def validate(cls: type[Self], value: Any) -> Self:
+    def _validate(cls: type[Self], value: Any) -> Self:
         """ """
         if (isinstance(value, str) or isinstance(value, int)) and value in RobotTools:
             return RobotTools[value]
-        return super(Tool, cls).validate(value)
+        return value
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls: type[Self],
+        source: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        return no_info_before_validator_function(
+            function=cls._validate,
+            schema=handler(source),
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls: type[Self],
+        schema: CoreSchema,
+        handler: GetJsonSchemaHandler,
+    ) -> JsonSchemaValue:
+        return handler(schema)
 
 
 class RobotToolsMeta(BaseRobotMeta, item_cls=Tool):

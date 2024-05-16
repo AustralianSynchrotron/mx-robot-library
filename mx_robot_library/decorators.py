@@ -2,10 +2,9 @@ from collections import OrderedDict
 from functools import wraps
 from inspect import BoundArguments, signature
 from time import sleep, time
-from typing import TYPE_CHECKING, Annotated, Any, Optional, TypeVar
+from typing import TYPE_CHECKING, Annotated, Any, Callable, Optional, TypeVar
 
-from pydantic import validate_arguments
-from pydantic.typing import AnyCallable
+from pydantic import ConfigDict, validate_call
 
 from .client.base import BaseClient, RootClient, SubClient
 from .exceptions.commands.common import SystemFault
@@ -19,7 +18,7 @@ from .schemas.responses.trajectory import TrajectoryResponse
 if TYPE_CHECKING:
     from .client import Client
 
-AnyCallableT = TypeVar("AnyCallableT", bound=AnyCallable)
+AnyCallableT = TypeVar("AnyCallableT", bound=Callable[..., Any])
 
 logger = get_logger()
 
@@ -49,7 +48,7 @@ def _get_bound_args(func: AnyCallableT, *args, **kwargs) -> OrderedDict[str, Any
         return OrderedDict()
 
 
-@validate_arguments
+@validate_call
 def inject_client(
     func: Optional[AnyCallableT] = None,
     *,
@@ -110,7 +109,7 @@ def inject_client(
     return _inject_client
 
 
-@validate_arguments
+@validate_call
 def inject_tool(
     func: Optional[AnyCallableT] = None,
     *,
@@ -154,7 +153,7 @@ def inject_tool(
     return _inject_tool
 
 
-@validate_arguments
+@validate_call
 def check_tool(
     func: Optional[AnyCallableT] = None,
     *,
@@ -240,7 +239,7 @@ def check_tool(
     return _check_tool
 
 
-@validate_arguments
+@validate_call
 def raise_ex(
     func: Optional[AnyCallableT] = None,
     *,
@@ -293,11 +292,11 @@ def raise_ex(
     return _raise_ex
 
 
-@validate_arguments
+@validate_call(config=ConfigDict(validate_default=True))
 def wait_for_path(
     func: Optional[AnyCallableT] = None,
     *,
-    path: Annotated[Path, RobotPaths],
+    path: Annotated[Path, RobotPaths] = None,
     end_path: Annotated[Path, RobotPaths] = RobotPaths.UNDEFINED,
     always: bool = False,
     timeout: float = 120.0,

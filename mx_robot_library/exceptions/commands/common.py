@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Annotated, Optional, Union
 
 from pydantic import Field
 from pydantic.dataclasses import dataclass
@@ -16,7 +16,7 @@ class CmdNotFound(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bcommand\b.*\bnot\b.*\bfound\b.*",
+        pattern=r"(?i).*\bcommand\b.*\bnot\b.*\bfound\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Command not found.")
@@ -36,7 +36,7 @@ class ManualModeError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bremote\b.*\bmode\b.*\brequested\b.*",
+        pattern=r"(?i).*\bremote\b.*\bmode\b.*\brequested\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Remote mode requested.")
@@ -56,7 +56,7 @@ class DoorOpenError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bdoors\b.*\bmust\b.*\bclosed\b.*",
+        pattern=r"(?i).*\bdoors\b.*\bmust\b.*\bclosed\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Door(s) is(are) opened.")
@@ -76,7 +76,7 @@ class EmergencyStop(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bemergency\b.*\bstop\b.*\btriggered\b.*",
+        pattern=r"(?i).*\bemergency\b.*\bstop\b.*\btriggered\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Emergency stop has been triggered.")
@@ -96,7 +96,7 @@ class SystemFault(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bsystem\b.*\bfault\b.*",
+        pattern=r"(?i).*\bsystem\b.*\bfault\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="System fault active.")
@@ -116,7 +116,7 @@ class InconsistentParams(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\binconsistent\b.*\bparameters\b.*",
+        pattern=r"(?i).*\binconsistent\b.*\bparameters\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Invalid parameters specified.")
@@ -136,7 +136,7 @@ class OrderRejected(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\border\b.*\brejected\b.*",
+        pattern=r"(?i).*\border\b.*\brejected\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Order rejected.")
@@ -157,7 +157,7 @@ class PathRunningError(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bpath\b.*(?:\bis\b|\balready\b).*\brunning\b.*",
+        pattern=r"(?i).*\bpath\b.*(?:\bis\b|\balready\b).*\brunning\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Path already running.")
@@ -178,7 +178,7 @@ class SafetyRestartRequired(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bsafety\b.*\brestart\b.*(?:\bneeded\b|\brequired\b).*",
+        pattern=r"(?i).*\bsafety\b.*\brestart\b.*(?:\bneeded\b|\brequired\b).*",
         default=None,
     )
     msg: str = Field(title="Message", default="Safety restart required.")
@@ -198,7 +198,7 @@ class DeviceNotResponding(PLCError):
     response: Optional[str] = Field(
         title="Response",
         description="Response received from the command call.",
-        regex=r"(?i).*\bdevice\b.*\bnot\b.*\bresponding\b.*",
+        pattern=r"(?i).*\bdevice\b.*\bnot\b.*\bresponding\b.*",
         default=None,
     )
     msg: str = Field(title="Message", default="Device not responding.")
@@ -209,15 +209,18 @@ class DeviceNotResponding(PLCError):
     )
 
 
-common_errors: TypeAlias = Union[
-    CmdNotFound,
-    ManualModeError,
-    DoorOpenError,
-    EmergencyStop,
-    SystemFault,
-    InconsistentParams,
-    OrderRejected,
-    PathRunningError,
-    SafetyRestartRequired,
-    DeviceNotResponding,
+common_errors: TypeAlias = Annotated[
+    Union[
+        CmdNotFound,
+        ManualModeError,
+        DoorOpenError,
+        EmergencyStop,
+        SystemFault,
+        InconsistentParams,
+        OrderRejected,
+        PathRunningError,
+        SafetyRestartRequired,
+        DeviceNotResponding,
+    ],
+    Field(union_mode="left_to_right"),
 ]

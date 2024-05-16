@@ -1,8 +1,9 @@
 import logging
 from functools import lru_cache
-from typing import Optional, Tuple, Union
+from typing import Annotated, Optional, Tuple, Union
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class ASCSettings(BaseSettings):
@@ -23,7 +24,9 @@ class ASCSettings(BaseSettings):
         description="Total number of trays supported.",
         default=20,
     )
-    ASC_TOOLS: Tuple[Union[str, int], ...] = Field(
+    ASC_TOOLS: Tuple[
+        Annotated[Union[str, int], Field(union_mode="left_to_right")], ...
+    ] = Field(
         title="Supported Tools",
         description="List of tools supported by this ASC.",
         default=("ToolChanger", "DoubleGripper", "PlateGripper", "LaserTool"),
@@ -64,9 +67,11 @@ class ASCSettings(BaseSettings):
 class Settings(ASCSettings):
     """Settings"""
 
-    class Config:
-        env_file = ".env"
-        env_prefix = "MX_"
+    model_config = SettingsConfigDict(
+        str_strip_whitespace=True,
+        env_prefix="MX_",
+        validate_assignment=True,
+    )
 
 
 @lru_cache()
