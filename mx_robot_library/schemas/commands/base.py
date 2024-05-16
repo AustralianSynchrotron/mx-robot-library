@@ -39,7 +39,6 @@ class BaseCmdModel(BaseModel):
             )
         return res
 
-    @classmethod
     @model_validator(mode="before")
     def compute_cmd_fmt(cls, value: Any) -> Any:
         if isinstance(value, dict):

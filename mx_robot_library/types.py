@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Annotated, Any, TypeVar, Union
 
 from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler, ValidationError
 from pydantic.json_schema import JsonSchemaValue
@@ -13,10 +13,14 @@ from pydantic_core.core_schema import (
     str_schema,
     union_schema,
     url_schema,
+    int_schema,
+    no_info_after_validator_function,
 )
 from typing_extensions import Self
 
-__all__ = ("HostAddress",)
+__all__ = ("HostAddress", "AsInt")
+
+AnyType = TypeVar("AnyType")
 
 
 if TYPE_CHECKING:
@@ -87,6 +91,41 @@ else:
                             ),
                         ],
                         mode="left_to_right",
+                    ),
+                ],
+            )
+
+        @classmethod
+        def __get_pydantic_json_schema__(
+            cls: type[Self],
+            schema: CoreSchema,
+            handler: GetJsonSchemaHandler,
+        ) -> JsonSchemaValue:
+            return handler(schema)
+
+        __hash__ = object.__hash__
+
+
+if TYPE_CHECKING:
+    AsInt = Annotated[AnyType, ...]
+else:
+    @dataclass()
+    class AsInt:
+        def __class_getitem__(cls: type[Self], item: AnyType, /) -> AnyType:
+            return Annotated[item, cls()]
+
+        @classmethod
+        def __get_pydantic_core_schema__(
+            cls: type[Self],
+            source: Any,
+            handler: GetCoreSchemaHandler,
+        ) -> CoreSchema:
+            return union_schema(
+                choices=[
+                    int_schema(),
+                    no_info_after_validator_function(
+                        function=source.__int__,
+                        schema=handler(source),
                     ),
                 ],
             )

@@ -1,20 +1,39 @@
 from collections import OrderedDict
 from enum import Enum
-from typing import Annotated, Any, Dict, Optional
+from typing import Annotated, Any, Dict, Optional, Union
 
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
     root_validator,
     validate_call,
     validator,
 )
-from typing_extensions import Literal
+from typing_extensions import Literal, TypeAlias
 
 from mx_robot_library.config import get_settings
+from ..common.sample import Pin, Puck, Plate, HotPuck
+from ..common.path import Path
+from ..common.position import Position
+from ..common.tool import Tool
+from ...types import AsInt
 
 config = get_settings()
+
+RobotInt: TypeAlias = Union[
+    int,
+    AsInt[Pin],
+    AsInt[Puck],
+    AsInt[Plate],
+    AsInt[HotPuck],
+    AsInt[Path],
+    AsInt[Position],
+    AsInt[Tool],
+]
 
 
 class TrajectorySubCmds(str, Enum):
@@ -68,15 +87,16 @@ class BaseTrajectoryCmd(BaseModel):
     sub_cmd: TrajectorySubCmds = Field(
         title="Sub Command",
     )
-    full_args: Optional[list[int]] = Field(title="Full Arguments", min_length=1)
-    args: list[int] = Field(title="Sub Arguments", min_length=1)
+    full_args: Optional[list[RobotInt]] = Field(title="Full Arguments", min_length=1)
+    args: list[RobotInt] = Field(title="Sub Arguments", min_length=1)
     cmd_fmt: Optional[str] = Field(
         title="Formatted Command",
         description="Formatted command to be passed via socket connection.",
         pattern=r"^[^\(\)\s]*\r|^\S*\(.*\)\r",
+        default=None,
     )
 
-    model_config = ConfigDict(validate_assignment=True)
+    model_config = ConfigDict(validate_assignment=True, validate_default=True)
 
     def __str__(self) -> str:
         return str(self.sub_cmd)
@@ -93,83 +113,86 @@ class BaseTrajectoryCmd(BaseModel):
             )
         return res
 
-    @root_validator(pre=True)
-    def compute_full_args(cls, values: Dict[str, Any]):  # noqa: B902
-        arg_vals = cls.get_named_args(values.get("args", []))
-        args = list(arg_vals.values())
-        if values.get("args") and any(args):
-            values["full_args"] = cls.trim_args(args)
-        else:
-            values["full_args"] = args
-        return values
+    # @root_validator(pre=True)
+    # def compute_full_args(cls, values: Dict[str, Any]):  # noqa: B902
+    #     arg_vals = cls.get_named_args(values.get("args", []))
+    #     args = list(arg_vals.values())
+    #     if values.get("args") and any(args):
+    #         values["full_args"] = cls.trim_args(args)
+    #     else:
+    #         values["full_args"] = args
+    #     return values
 
-    @validator("cmd_fmt", always=True)
-    def compute_cmd_fmt(
-        cls, v: Optional[str], values: Dict[str, Any]  # noqa: B902
-    ) -> str:
-        if values.get("cmd") and values.get("sub_cmd") and values.get("full_args"):
-            cmd_args = [values["sub_cmd"], *values["full_args"]]
-            v = f"{values['cmd']}({','.join([str(arg) for arg in cmd_args])})\r"
-        return v
+    @model_validator(mode="before")
+    def compute_values(cls, value: Any) -> Any:
+        if isinstance(value, dict):
+            arg_vals = cls.get_named_args(value.get("args", []))
+            args = list(arg_vals.values())
+            if value.get("args") and any(args):
+                value["full_args"] = cls.trim_args(args)
+            else:
+                value["full_args"] = args
 
-    @validator("full_args", always=True)
-    def validate_full_args(
-        cls, v: list[int], values: Dict[str, Any]  # noqa: B902
-    ) -> list[int]:
-        arg_vals = cls.get_named_args(v)
-        if not arg_vals["tool_num"] >= 1:
-            raise ValueError("Ensure tool number is greater than/equal to 1.")
-        if arg_vals["puck_num"] and not (
-            arg_vals["puck_num"] >= 1 and arg_vals["puck_num"] <= config.ASC_NUM_PUCKS
-        ):
-            raise ValueError(
-                f"Ensure puck number is greater than/equal to 1 and less than/equal to {config.ASC_NUM_PUCKS}."  # noqa: E501,B950
-            )
-        smpl_num = arg_vals["sample_num"]
-        if smpl_num and not (smpl_num >= 1 and smpl_num <= config.ASC_NUM_PINS):
-            raise ValueError(
-                f"Ensure sample number is greater than/equal to 1 and less than/equal to {config.ASC_NUM_PINS}."  # noqa: E501,B950
-            )
-        if arg_vals["datamatrix_scan"] not in (1, 0):
-            raise ValueError(
-                f"Datamatrix scan \"{arg_vals['datamatrix_scan']}\" not supported, valid options are (1 → On / 0 → Off)."  # noqa: E501,B950,B907
-            )
-        n_puck_num = arg_vals["next_puck_num"]
-        if n_puck_num and not (n_puck_num >= 0 and n_puck_num <= config.ASC_NUM_PUCKS):
-            raise ValueError(
-                f"Ensure next puck number is greater than/equal to 0 and less than/equal to {config.ASC_NUM_PUCKS}."  # noqa: E501,B950
-            )
-        n_smpl_nm = arg_vals["next_sample_num"]
-        if n_smpl_nm and not (n_smpl_nm >= 0 and n_smpl_nm <= config.ASC_NUM_PINS):
-            raise ValueError(
-                f"Ensure next sample number is greater than/equal to 0 and less than/equal to {config.ASC_NUM_PINS}."  # noqa: E501,B950
-            )
-        if arg_vals["sample_type"] not in (1, 0):
-            raise ValueError(
-                f"Sample type \"{arg_vals['sample_type']}\" not supported, valid options are (1 → Hampton / 0 → Other)."  # noqa: E501,B950,B907
-            )
-        if arg_vals["next_sample_type"] not in (1, 0):
-            raise ValueError(
-                f"Next sample type \"{arg_vals['next_sample_type']}\" not supported, valid options are (1 → Hampton / 0 → Other)."  # noqa: E501,B950,B907
-            )
-        if arg_vals["sample_detect_inhibit"] not in (1, 0):
-            raise ValueError(
-                f"Sample detection inhibition \"{arg_vals['sample_detect_inhibit']}\" not supported, valid options are (1 → Detection disabled / 0 → Detection enabled)."  # noqa: E501,B950,B907
-            )
-        if arg_vals["next_sample_detect_inhibit"] not in (1, 0):
-            raise ValueError(
-                f"Next sample detection inhibition \"{arg_vals['next_sample_detect_inhibit']}\" not supported, valid options are (1 → Detection disabled / 0 → Detection enabled)."  # noqa: E501,B950,B907
-            )
-        return v
+            if not arg_vals["tool_num"] >= 1:
+                raise ValueError("Ensure tool number is greater than/equal to 1.")
+            if arg_vals["puck_num"] and not (
+                arg_vals["puck_num"] >= 1 and arg_vals["puck_num"] <= config.ASC_NUM_PUCKS
+            ):
+                raise ValueError(
+                    f"Ensure puck number is greater than/equal to 1 and less than/equal to {config.ASC_NUM_PUCKS}."  # noqa: E501,B950
+                )
+            smpl_num = arg_vals["sample_num"]
+            if smpl_num and not (smpl_num >= 1 and smpl_num <= config.ASC_NUM_PINS):
+                raise ValueError(
+                    f"Ensure sample number is greater than/equal to 1 and less than/equal to {config.ASC_NUM_PINS}."  # noqa: E501,B950
+                )
+            if arg_vals["datamatrix_scan"] not in (1, 0):
+                raise ValueError(
+                    f"Datamatrix scan \"{arg_vals['datamatrix_scan']}\" not supported, valid options are (1 → On / 0 → Off)."  # noqa: E501,B950,B907
+                )
+            n_puck_num = arg_vals["next_puck_num"]
+            if n_puck_num and not (n_puck_num >= 0 and n_puck_num <= config.ASC_NUM_PUCKS):
+                raise ValueError(
+                    f"Ensure next puck number is greater than/equal to 0 and less than/equal to {config.ASC_NUM_PUCKS}."  # noqa: E501,B950
+                )
+            n_smpl_nm = arg_vals["next_sample_num"]
+            if n_smpl_nm and not (n_smpl_nm >= 0 and n_smpl_nm <= config.ASC_NUM_PINS):
+                raise ValueError(
+                    f"Ensure next sample number is greater than/equal to 0 and less than/equal to {config.ASC_NUM_PINS}."  # noqa: E501,B950
+                )
+            if arg_vals["sample_type"] not in (1, 0):
+                raise ValueError(
+                    f"Sample type \"{arg_vals['sample_type']}\" not supported, valid options are (1 → Hampton / 0 → Other)."  # noqa: E501,B950,B907
+                )
+            if arg_vals["next_sample_type"] not in (1, 0):
+                raise ValueError(
+                    f"Next sample type \"{arg_vals['next_sample_type']}\" not supported, valid options are (1 → Hampton / 0 → Other)."  # noqa: E501,B950,B907
+                )
+            if arg_vals["sample_detect_inhibit"] not in (1, 0):
+                raise ValueError(
+                    f"Sample detection inhibition \"{arg_vals['sample_detect_inhibit']}\" not supported, valid options are (1 → Detection disabled / 0 → Detection enabled)."  # noqa: E501,B950,B907
+                )
+            if arg_vals["next_sample_detect_inhibit"] not in (1, 0):
+                raise ValueError(
+                    f"Next sample detection inhibition \"{arg_vals['next_sample_detect_inhibit']}\" not supported, valid options are (1 → Detection disabled / 0 → Detection enabled)."  # noqa: E501,B950,B907
+                )
+        return value
+
+    @field_validator("cmd_fmt", mode="before")
+    def compute_cmd_fmt(cls, value: Any, info: ValidationInfo) -> Union[str, None]:
+        if info.data.get("cmd") and info.data.get("sub_cmd"):
+            cmd_args = [info.data["sub_cmd"], *info.data["full_args"]]
+            return f"{info.data['cmd']}({','.join([str(arg) for arg in cmd_args])})\r"
+        return None
 
     @staticmethod
     @validate_call
-    def get_named_args(args: list[int]) -> OrderedDict:
+    def get_named_args(args: list[RobotInt]) -> OrderedDict:
         """Generate an named dict of arguments from passed list.
 
         Parameters
         ----------
-        args : list[int]
+        args : list[RobotInt]
             List of unnamed arguments.
 
         Returns
@@ -199,13 +222,13 @@ class BaseTrajectoryCmd(BaseModel):
 
     @staticmethod
     @validate_call
-    def trim_args(args: list[int]) -> list[int]:
+    def trim_args(args: list[RobotInt]) -> list[int]:
         """Chop any trailing "0" values off the end of the returned list,
         as they will default automatically.
 
         Parameters
         ----------
-        args : list[int]
+        args : list[RobotInt]
             List of argument values.
 
         Returns
@@ -222,7 +245,7 @@ class RobotTrajMoveHomeDirectCmd(BaseTrajectoryCmd):
 
     Move the robot arm back to home position.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to set tool to move home.
     """
 
@@ -230,7 +253,7 @@ class RobotTrajMoveHomeDirectCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.MOVE_HOME_DIRECT,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -242,7 +265,7 @@ class RobotTrajMoveHomeSafeCmd(BaseTrajectoryCmd):
 
     Move the robot arm back to home position.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to set tool to move home.
     """
 
@@ -250,7 +273,7 @@ class RobotTrajMoveHomeSafeCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.MOVE_HOME_SAFE,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -264,7 +287,7 @@ class RobotTrajMountSampleCmd(BaseTrajectoryCmd):
     and mount it on the goniometer.
     The sample needed for the next exchange can be then pre-picked.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing thirteen integers to select sample to mounted
         and the sample to be prepicked.
 
@@ -287,7 +310,7 @@ class RobotTrajMountSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.MOUNT_AND_PREPICK_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=13,
         max_length=13,
@@ -300,7 +323,7 @@ class RobotTrajUnmountSampleCmd(BaseTrajectoryCmd):
     Get the sample from the diffractometer, eventually read its datamatrix
     and put it back into the Dewar, in its memorized position.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing five integers to select tool used to get the sample,
         whether to scan the sample data matrix and the goniometer offset.
 
@@ -315,21 +338,23 @@ class RobotTrajUnmountSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.UNMOUNT_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=5,
         max_length=5,
     )
 
-    @root_validator(pre=True)
-    def compute_full_args(cls, values: Dict[str, Any]):  # noqa: B902
-        # Since our input arguments aren't in the correct position for the generated
-        # command, we need to shift them into place.
-        args = [0] * 13
-        if len(values.get("args", [])) == 5:
-            args[0], args[3], args[10], args[11], args[12] = values["args"]
-        values["full_args"] = cls.trim_args(args)
-        return values
+    @model_validator(mode="before")
+    def compute_values(cls, value: Any) -> Any:
+        value = super(cls, cls).compute_values(value)
+        if isinstance(value, dict):
+            # Since our input arguments aren't in the correct position for the generated
+            # command, we need to shift them into place.
+            args = [0] * 13
+            if len(value.get("args", [])) == 5:
+                args[0], args[3], args[10], args[11], args[12] = value["args"]
+            value["full_args"] = cls.trim_args(args)
+        return value
 
 
 class RobotTrajUnmountAndMountSampleCmd(BaseTrajectoryCmd):
@@ -343,7 +368,7 @@ class RobotTrajUnmountAndMountSampleCmd(BaseTrajectoryCmd):
     The sample needed for the next exchange can be then pre-picked
     (only available for double grippers with process requiring soaking phases).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing thirteen integers to select sample to mounted
         and the sample to be prepicked.
 
@@ -366,7 +391,7 @@ class RobotTrajUnmountAndMountSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.UNMOUNT_MOUNT_AND_PREPICK_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=13,
         max_length=13,
@@ -381,7 +406,7 @@ class RobotTrajPrepickSampleCmd(BaseTrajectoryCmd):
     available for double grippers with process requiring
     soaking phases).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing six integers to select sample to be prepicked.
 
         0: Tool Number
@@ -396,7 +421,7 @@ class RobotTrajPrepickSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.PREPICK_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=6,
         max_length=6,
@@ -421,7 +446,7 @@ class RobotTrajReadSampleCmd(BaseTrajectoryCmd):
     Take a sample from the Dewar, read the datamatrix
     and put the sample back into the Dewar.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing five integers to select sample to be read.
 
         0: Tool Number
@@ -435,7 +460,7 @@ class RobotTrajReadSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.READ_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=5,
         max_length=5,
@@ -460,7 +485,7 @@ class RobotTrajReturnSampleCmd(BaseTrajectoryCmd):
     Put the sample in the gripper back in the Dewar to its memorized position
     (generally used after a “recover” path).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select
         the tool holding the sample to be returned.
     """
@@ -469,7 +494,7 @@ class RobotTrajReturnSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.RETURN_SAMPLE,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -482,7 +507,7 @@ class RobotTrajPickAndMoveSampleCmd(BaseTrajectoryCmd):
     Take a sample from the Dewar and move to the goniometer mounting position
     without releasing it (path to test goniometer position).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing five integers to select sample to be picked and moved.
 
         0: Tool Number
@@ -496,7 +521,7 @@ class RobotTrajPickAndMoveSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.PICK_AND_MOVE_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=5,
         max_length=5,
@@ -522,7 +547,7 @@ class RobotTrajHotPuckMountSampleCmd(BaseTrajectoryCmd):
     and mount it on the goniometer.
     The sample needed for the next exchange can be then pre-picked.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing thirteen integers to select sample to mounted
         and the sample to be prepicked.
 
@@ -545,7 +570,7 @@ class RobotTrajHotPuckMountSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.HOTPUCK_MOUNT_AND_PREPICK_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=13,
         max_length=13,
@@ -558,7 +583,7 @@ class RobotTrajHotPuckUnmountSampleCmd(BaseTrajectoryCmd):
     Get the sample from the diffractometer, eventually read its datamatrix
     and put it back into the designated hot puck, in its memorized position.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing five integers to select tool used to get the sample,
         whether to scan the sample data matrix and the goniometer offset.
 
@@ -573,7 +598,7 @@ class RobotTrajHotPuckUnmountSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.HOTPUCK_UNMOUNT_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=5,
         max_length=5,
@@ -601,7 +626,7 @@ class RobotTrajHotPuckUnmountAndMountSampleCmd(BaseTrajectoryCmd):
     The sample needed for the next exchange can be then pre-picked
     (only available for double grippers with process requiring soaking phases).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing thirteen integers to select sample to mounted
         and the sample to be prepicked.
 
@@ -624,7 +649,7 @@ class RobotTrajHotPuckUnmountAndMountSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.HOTPUCK_UNMOUNT_MOUNT_AND_PREPICK_SAMPLE,
     )
-    args: list[int] = Field(
+    args: list[RobotInt] = Field(
         title="Arguments",
         min_length=13,
         max_length=13,
@@ -637,7 +662,7 @@ class RobotTrajHotPuckReturnSampleCmd(BaseTrajectoryCmd):
     Put the sample in the gripper back in the designated hot puck
     to its memorized position (generally used after a “recover” path).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select
         the tool holding the sample to be returned.
     """
@@ -646,7 +671,7 @@ class RobotTrajHotPuckReturnSampleCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.HOTPUCK_RETURN_SAMPLE,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -658,7 +683,7 @@ class RobotTrajMountPlateCmd(BaseTrajectoryCmd):
 
     Take a plate from the hotel and put in onto the goniometer.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing two integers to select the tool and desired plate to mount.
     """
 
@@ -666,7 +691,7 @@ class RobotTrajMountPlateCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.MOUNT_PLATE,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=2,
         max_length=2,
@@ -678,7 +703,7 @@ class RobotTrajUnmountPlateCmd(BaseTrajectoryCmd):
 
     Take the plate from the goniometer and put it back in the hotel.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select the tool holding the plate.
     """
 
@@ -686,7 +711,7 @@ class RobotTrajUnmountPlateCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.UNMOUNT_PLATE,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -699,7 +724,7 @@ class RobotTrajPickAndMovePlateCmd(BaseTrajectoryCmd):
     Take a plate from the hotel and move to the goniometer mounting position without
     releasing it (path to test goniometer position).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing two integers to select the tool and desired plate to pick.
     """
 
@@ -707,7 +732,7 @@ class RobotTrajPickAndMovePlateCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.PICK_AND_MOVE_PLATE,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=2,
         max_length=2,
@@ -719,7 +744,7 @@ class RobotTrajTeachGonioCmd(BaseTrajectoryCmd):
 
     Launch automatic teaching of goniometer position (available only with laser tool).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select the tool.
     """
 
@@ -727,7 +752,7 @@ class RobotTrajTeachGonioCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_GONIOMETER,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -740,7 +765,7 @@ class RobotTrajTeachPuckCmd(BaseTrajectoryCmd):
     Launch automatic teaching of the puck given in argument
     (available only with laser tool).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing two integers to select the tool and puck to teach.
     """
 
@@ -748,7 +773,7 @@ class RobotTrajTeachPuckCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_PUCK,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=2,
         max_length=2,
@@ -761,7 +786,7 @@ class RobotTrajTeachDewarCmd(BaseTrajectoryCmd):
     Launch automatic teaching of all puck positions inside the dewar,
     starting from the puck number specified (available only with laser tool).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing two integers to select the tool and the starting puck.
     """
 
@@ -769,7 +794,7 @@ class RobotTrajTeachDewarCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_DEWAR,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=2,
         max_length=2,
@@ -781,7 +806,7 @@ class RobotTrajTeachPlateHolderCmd(BaseTrajectoryCmd):
 
     Launch automatic teaching of plates hotel.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select the tool.
     """
 
@@ -789,7 +814,7 @@ class RobotTrajTeachPlateHolderCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_PLATE_HOLDER,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -802,7 +827,7 @@ class RobotTrajTeachHotPuckCmd(BaseTrajectoryCmd):
     Launch automatic teaching of the hot puck given in argument
     (available only with laser tool).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing two integers to select the tool and puck to teach.
     """
 
@@ -810,7 +835,7 @@ class RobotTrajTeachHotPuckCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.TEACH_HOTPUCK,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=2,
         max_length=2,
@@ -823,7 +848,7 @@ class RobotTrajSoakToolCmd(BaseTrajectoryCmd):
     Chilling of the gripper (only for grippers with process
     requiring drying and soaking phases).
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select the tool.
     """
 
@@ -831,7 +856,7 @@ class RobotTrajSoakToolCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.SOAK_TOOL,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -845,7 +870,7 @@ class RobotTrajDryToolCmd(BaseTrajectoryCmd):
 
     /!\\ Do not dry a gripper already in warm conditions /!\\
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select the tool.
     """
 
@@ -853,7 +878,7 @@ class RobotTrajDryToolCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.DRY_TOOL,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -866,7 +891,7 @@ class RobotTrajChangeToolCmd(BaseTrajectoryCmd):
     Launch automatic tool change, the robot will put its current tool
     on the parking and pick the one given in argument.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select the desired tool to switch out.
     """
 
@@ -874,7 +899,7 @@ class RobotTrajChangeToolCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.CHANGE_TOOL,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
@@ -886,7 +911,7 @@ class RobotTrajCalibrateToolCmd(BaseTrajectoryCmd):
 
     Start gripper or laser tool calibration until the precision criterion is reached.
 
-    args : list[int]
+    args : list[RobotInt]
         List containing a single integer to select the desired tool calibrate.
     """
 
@@ -894,7 +919,7 @@ class RobotTrajCalibrateToolCmd(BaseTrajectoryCmd):
         title="Sub Command",
         default=TrajectorySubCmds.CALIBRATE_TOOL,
     )
-    args: list[Annotated[int, Field(ge=1)]] = Field(
+    args: list[Annotated[RobotInt, Field(ge=1)]] = Field(
         title="Arguments",
         min_length=1,
         max_length=1,
