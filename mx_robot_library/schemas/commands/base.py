@@ -40,7 +40,7 @@ class BaseCmdModel(BaseModel):
         return res
 
     @model_validator(mode="before")
-    def compute_cmd_fmt(cls, value: Any) -> Any:
+    def compute_cmd_fmt(cls, value: Any) -> Any:  # noqa: B902
         if isinstance(value, dict):
             if value.get("cmd") and value.get("args"):
                 _args = ",".join([str(arg) for arg in value["args"]])

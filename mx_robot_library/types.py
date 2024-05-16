@@ -9,12 +9,12 @@ from pydantic_core.core_schema import (
     ValidatorFunctionWrapHandler,
     any_schema,
     chain_schema,
+    int_schema,
+    no_info_after_validator_function,
     no_info_wrap_validator_function,
     str_schema,
     union_schema,
     url_schema,
-    int_schema,
-    no_info_after_validator_function,
 )
 from typing_extensions import Self
 
@@ -109,6 +109,7 @@ else:
 if TYPE_CHECKING:
     AsInt = Annotated[AnyType, ...]
 else:
+
     @dataclass()
     class AsInt:
         def __class_getitem__(cls: type[Self], item: AnyType, /) -> AnyType:

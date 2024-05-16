@@ -11,16 +11,16 @@ from pydantic import (
     model_validator,
     root_validator,
     validate_call,
-    validator,
 )
 from typing_extensions import Literal, TypeAlias
 
 from mx_robot_library.config import get_settings
-from ..common.sample import Pin, Puck, Plate, HotPuck
+
+from ...types import AsInt
 from ..common.path import Path
 from ..common.position import Position
+from ..common.sample import HotPuck, Pin, Plate, Puck
 from ..common.tool import Tool
-from ...types import AsInt
 
 config = get_settings()
 
@@ -113,18 +113,8 @@ class BaseTrajectoryCmd(BaseModel):
             )
         return res
 
-    # @root_validator(pre=True)
-    # def compute_full_args(cls, values: Dict[str, Any]):  # noqa: B902
-    #     arg_vals = cls.get_named_args(values.get("args", []))
-    #     args = list(arg_vals.values())
-    #     if values.get("args") and any(args):
-    #         values["full_args"] = cls.trim_args(args)
-    #     else:
-    #         values["full_args"] = args
-    #     return values
-
     @model_validator(mode="before")
-    def compute_values(cls, value: Any) -> Any:
+    def compute_values(cls, value: Any) -> Any:  # noqa: B902
         if isinstance(value, dict):
             arg_vals = cls.get_named_args(value.get("args", []))
             args = list(arg_vals.values())
@@ -136,7 +126,8 @@ class BaseTrajectoryCmd(BaseModel):
             if not arg_vals["tool_num"] >= 1:
                 raise ValueError("Ensure tool number is greater than/equal to 1.")
             if arg_vals["puck_num"] and not (
-                arg_vals["puck_num"] >= 1 and arg_vals["puck_num"] <= config.ASC_NUM_PUCKS
+                arg_vals["puck_num"] >= 1
+                and arg_vals["puck_num"] <= config.ASC_NUM_PUCKS  # noqa: W503
             ):
                 raise ValueError(
                     f"Ensure puck number is greater than/equal to 1 and less than/equal to {config.ASC_NUM_PUCKS}."  # noqa: E501,B950
@@ -151,7 +142,9 @@ class BaseTrajectoryCmd(BaseModel):
                     f"Datamatrix scan \"{arg_vals['datamatrix_scan']}\" not supported, valid options are (1 → On / 0 → Off)."  # noqa: E501,B950,B907
                 )
             n_puck_num = arg_vals["next_puck_num"]
-            if n_puck_num and not (n_puck_num >= 0 and n_puck_num <= config.ASC_NUM_PUCKS):
+            if n_puck_num and not (
+                n_puck_num >= 0 and n_puck_num <= config.ASC_NUM_PUCKS
+            ):
                 raise ValueError(
                     f"Ensure next puck number is greater than/equal to 0 and less than/equal to {config.ASC_NUM_PUCKS}."  # noqa: E501,B950
                 )
@@ -179,7 +172,9 @@ class BaseTrajectoryCmd(BaseModel):
         return value
 
     @field_validator("cmd_fmt", mode="before")
-    def compute_cmd_fmt(cls, value: Any, info: ValidationInfo) -> Union[str, None]:
+    def compute_cmd_fmt(
+        cls, value: Any, info: ValidationInfo  # noqa: B902
+    ) -> Union[str, None]:
         if info.data.get("cmd") and info.data.get("sub_cmd"):
             cmd_args = [info.data["sub_cmd"], *info.data["full_args"]]
             return f"{info.data['cmd']}({','.join([str(arg) for arg in cmd_args])})\r"
@@ -345,7 +340,7 @@ class RobotTrajUnmountSampleCmd(BaseTrajectoryCmd):
     )
 
     @model_validator(mode="before")
-    def compute_values(cls, value: Any) -> Any:
+    def compute_values(cls, value: Any) -> Any:  # noqa: B902
         value = super(cls, cls).compute_values(value)
         if isinstance(value, dict):
             # Since our input arguments aren't in the correct position for the generated

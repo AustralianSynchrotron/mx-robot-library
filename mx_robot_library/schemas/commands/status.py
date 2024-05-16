@@ -1,5 +1,4 @@
-from typing import Any
-from pydantic import Field, model_validator
+from pydantic import Field
 
 from .base import BaseCmdModel, CmdEnum, CmdField
 
