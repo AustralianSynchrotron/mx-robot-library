@@ -92,6 +92,12 @@ class StateResponse(BaseStatusResponse):
         title="PLC Last Message",
         description="Last information message from PLC.",
     )
+    sample_dewar_level: float = Field(
+        title="Sample Dewar Level",
+    )
+    cryojet_dewar_level: float = Field(
+        title="Cryojet Dewar Level",
+    )
 
     _compute_error = field_validator("error", mode="before")(compute_error)
 
@@ -124,6 +130,8 @@ class StateResponse(BaseStatusResponse):
             "seq_paused": 18,
             "speed_ratio": 19,
             "plc_last_msg": 28,
+            "sample_dewar_level": 22,
+            "cryojet_dewar_level": 52,
         }
         return MappingProxyType(_position_map)
 
