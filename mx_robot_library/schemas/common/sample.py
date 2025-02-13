@@ -150,7 +150,7 @@ class Pin(BaseSample):
         le=config.ASC_NUM_PINS,
         ge=1,
     )
-    puck: Annotated[Union[Puck, HotPuck], Field(union_mode="left_to_right")] = Field(
+    puck: Annotated[Union[Puck, HotPuck, int], Field(union_mode="left_to_right")] = Field(
         title="Puck",
     )
     type: PinType = Field(
