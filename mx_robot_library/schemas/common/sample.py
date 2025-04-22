@@ -6,6 +6,7 @@ from pydantic import (
     Field,
     GetCoreSchemaHandler,
     GetJsonSchemaHandler,
+    model_validator,
     validate_call,
 )
 from pydantic.json_schema import JsonSchemaValue
@@ -28,7 +29,14 @@ class PinType(int, Enum):
 class BaseSample(BaseModel):
     """Abstract Sample Model"""
 
-    id: int = Field(title="ID", ge=1)
+    id: int = Field(title="ID")
+
+    @model_validator(mode="after")
+    def validate_id(self) -> Self:
+        id_value = self.id
+        if id_value != -1 and id_value < 1:
+            raise ValueError("ID must be greater than or equal to 1, or exactly -1.")
+        return self
 
     def __int__(self: Self) -> int:
         return self.id
@@ -150,8 +158,10 @@ class Pin(BaseSample):
         le=config.ASC_NUM_PINS,
         ge=1,
     )
-    puck: Annotated[Union[Puck, HotPuck, int], Field(union_mode="left_to_right")] = Field(
-        title="Puck",
+    puck: Annotated[Union[Puck, HotPuck, int], Field(union_mode="left_to_right")] = (
+        Field(
+            title="Puck",
+        )
     )
     type: PinType = Field(
         title="Type",
