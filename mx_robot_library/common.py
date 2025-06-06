@@ -112,3 +112,39 @@ class Common(SubClient, channel=CmdChannel.CMD):
             Decoded response from the robot.
         """
         return self.send_cmd(cmd=RobotGeneralCmds.SLOW_DOWN)
+
+    @raise_ex
+    @validate_call
+    def close_lid(self, *args, **kwargs) -> CommonResponse:
+        """Decrease robot speed (range from 0.01% to 100%).
+
+        Returns
+        -------
+        CommonResponse
+            Decoded response from the robot.
+        """
+        return self.send_cmd(cmd=RobotGeneralCmds.CLOSE_LID)
+
+    @raise_ex
+    @validate_call
+    def open_lid(self, *args, **kwargs) -> CommonResponse:
+        """Decrease robot speed (range from 0.01% to 100%).
+
+        Returns
+        -------
+        CommonResponse
+            Decoded response from the robot.
+        """
+        return self.send_cmd(cmd=RobotGeneralCmds.OPEN_LID)
+
+    @raise_ex
+    @validate_call
+    def abort(self, *args, **kwargs) -> CommonResponse:
+        """Decrease robot speed (range from 0.01% to 100%).
+
+        Returns
+        -------
+        CommonResponse
+            Decoded response from the robot.
+        """
+        return self.send_cmd(cmd=RobotGeneralCmds.ABORT)
