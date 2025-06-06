@@ -116,7 +116,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @validate_call
     def close_lid(self, *args, **kwargs) -> CommonResponse:
-        """Decrease robot speed (range from 0.01% to 100%).
+        """Close lid
 
         Returns
         -------
@@ -128,7 +128,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @validate_call
     def open_lid(self, *args, **kwargs) -> CommonResponse:
-        """Decrease robot speed (range from 0.01% to 100%).
+        """Open lid
 
         Returns
         -------
@@ -140,7 +140,7 @@ class Common(SubClient, channel=CmdChannel.CMD):
     @raise_ex
     @validate_call
     def abort(self, *args, **kwargs) -> CommonResponse:
-        """Decrease robot speed (range from 0.01% to 100%).
+        """Abort
 
         Returns
         -------
