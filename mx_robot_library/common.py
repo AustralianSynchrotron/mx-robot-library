@@ -112,3 +112,39 @@ class Common(SubClient, channel=CmdChannel.CMD):
             Decoded response from the robot.
         """
         return self.send_cmd(cmd=RobotGeneralCmds.SLOW_DOWN)
+
+    @raise_ex
+    @validate_call
+    def close_lid(self, *args, **kwargs) -> CommonResponse:
+        """Close lid
+
+        Returns
+        -------
+        CommonResponse
+            Decoded response from the robot.
+        """
+        return self.send_cmd(cmd=RobotGeneralCmds.CLOSE_LID)
+
+    @raise_ex
+    @validate_call
+    def open_lid(self, *args, **kwargs) -> CommonResponse:
+        """Open lid
+
+        Returns
+        -------
+        CommonResponse
+            Decoded response from the robot.
+        """
+        return self.send_cmd(cmd=RobotGeneralCmds.OPEN_LID)
+
+    @raise_ex
+    @validate_call
+    def abort(self, *args, **kwargs) -> CommonResponse:
+        """Abort
+
+        Returns
+        -------
+        CommonResponse
+            Decoded response from the robot.
+        """
+        return self.send_cmd(cmd=RobotGeneralCmds.ABORT)
