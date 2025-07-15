@@ -148,3 +148,30 @@ class Status(SubClient, channel=CmdChannel.STATUS):
             )
             if _populated
         )
+
+    def get_loaded_trays(self) -> list[tuple[int, str]]:
+        """Gets a list of loaded trays with their positions and barcodes.
+
+        According to the robot documentation, the sample data response
+        corresponds to:
+
+        50 = Plate position 1 corresponding barcode
+        ....
+        69 = Plate position 20 corresponding barcode
+
+        And 70 to 75 = HotPucks IDs
+
+        Returns
+        -------
+        list[tuple[int, str]]
+            List of tuples with plate position and barcode.
+            Each tuple contains the plate position (1-20) and the barcode string.
+            If a position is empty, it will not be included in the list.
+        """
+        raw_values = self.sample_data.raw_values
+
+        data_matrix = []
+        for i in range(50, 70):
+            if raw_values[i]:
+                data_matrix.append((i - 49, raw_values[i]))
+        return data_matrix
