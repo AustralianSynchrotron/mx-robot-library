@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mx-robot-library"
-version = "0.2.6"
+version = "0.2.7"
 description = "MX Robot Library"
 license = "GPL-3.0-or-later"
 authors = ["MX3 Team"]
@@ -12,7 +12,7 @@ url = "https://pypi.asci.synchrotron.org.au/root/pypi/+simple"
 priority = "primary"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.9"
 pydantic = ">=2.8.2,<3.0.0"
 pydantic-settings = ">=2.4.0"
 typing-extensions = ">=4.6.1"
